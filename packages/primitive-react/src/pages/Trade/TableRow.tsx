@@ -7,14 +7,21 @@ import Loading from "../../components/Loading";
 import Row from "../../components/Row";
 
 const Add = styled(Button)`
-    border-radius: 0px 8px 8px 0px;
-    border-left: none;
-    min-width: 2em;
-    min-height: 1em;
+    border-radius: 720px;
+    border-color: #212121;
+    color: lightgreen;
+    width: 1em;
+    height: 1em;
+    min-width: 0;
+    min-height: 0;
     align-items: center;
-    font-weight: 700;
-    margin: 0;
+    font-weight: 1000;
+    margin: auto;
     padding: 8px;
+    :hover {
+        background-color: #f9f9f9;
+        color: #000000;
+    }
 `;
 
 const Cost = styled(Button)`
@@ -32,6 +39,10 @@ const Item = styled.div`
     height: 10vmin;
     display: flex;
     align-items: center;
+`;
+
+const TRow = styled(Row)`
+    border-bottom: solid 0.1em #212121;
 `;
 
 const TableRow: FunctionComponent<any> = ({ option, addToCart, data }) => {
@@ -63,26 +74,26 @@ const TableRow: FunctionComponent<any> = ({ option, addToCart, data }) => {
 
     console.log(data ? data : "loding data");
     return (
-        <Row id="table-row">
-            <Row style={{ width: "80%", borderBottom: "solid 0.1em darkgrey" }}>
-                {tableItems ? (
-                    tableItems.map((v, index) => (
-                        <Item id={index}>
-                            <H3>{v}</H3>
-                        </Item>
-                    ))
-                ) : (
-                    <Loading />
-                )}
-                <Item>
-                    <Cost onClick={() => addToCart(option)}>
+        <TRow id="table-row">
+            {tableItems ? (
+                tableItems.map((v, index) => (
+                    <Item id={index}>
+                        <H3>{v}</H3>
+                    </Item>
+                ))
+            ) : (
+                <Loading />
+            )}
+            <Item>
+                <Item onClick={() => addToCart(option)}>
+                    <H3>
                         ${" "}
                         {data ? (data?.pair?.premium).toFixed(2) : <Loading />}
-                    </Cost>
+                    </H3>
                     <Add onClick={() => addToCart(option)}>+</Add>
                 </Item>
-            </Row>
-        </Row>
+            </Item>
+        </TRow>
     );
 };
 

@@ -51,7 +51,7 @@ export type OrderDetails = {
 export const View = styled.div`
     display: flex;
     flex-direction: column;
-    max-width: calc(1248px + 16px * 2);
+    max-width: 100%;
     padding: 100px 16px 0 16px;
     margin: 0 auto;
     margin-right: 0;
@@ -60,14 +60,36 @@ export const View = styled.div`
 const Table = styled.div`
     display: flex;
     flex-direction: column;
-    width: calc(1248px + 16px * 2);
+    width: 100%;
+    margin: 1em auto;
 `;
 
 const TableHeader = styled.div`
     display: flex;
     flex-direction: row;
-    height: 100%;
-    width: calc(1248px + 16px * 2);
+    width: 100%;
+    margin: 1em auto;
+`;
+
+const TableHeaderText = styled(H3)`
+    text-transform: uppercase;
+    color: "#212121";
+    letter-spacing: 0.025em;
+`;
+
+const TradeView = styled(Row)`
+    margin: 128px;
+    @media (max-width: 375px) {
+        margin: 48px auto;
+    }
+`;
+
+const TableView = styled(Column)`
+    width: 65%;
+`;
+
+const CartView = styled(Column)`
+    width: 35%;
 `;
 
 const ethPriceApi =
@@ -333,21 +355,6 @@ const Trade: FunctionComponent<TradeProps> = () => {
         }
     };
 
-    const TradeView = styled(Row)`
-        margin: 128px;
-        @media (max-width: 375px) {
-            margin: 48px auto;
-        }
-    `;
-
-    const TableView = styled(Column)`
-        width: 65%;
-    `;
-
-    const CartView = styled(Column)`
-        width: 35%;
-    `;
-
     const TableDivider = styled.div`
         border-top: solid 0.1em lightgrey;
     `;
@@ -370,37 +377,29 @@ const Trade: FunctionComponent<TradeProps> = () => {
                         </Section>
                     </Row>
 
-                    <Row id="table-header">
-                        <Section>
-                            <TableHeader id="table-header">
-                                <Row style={{ width: "80%" }}>
-                                    {tableHeaders.map((v) => (
-                                        <H3 style={{ width: "20%" }}>{v}</H3>
-                                    ))}
-                                </Row>
-                            </TableHeader>
-                        </Section>
-                    </Row>
+                    <TableHeader id="table-header">
+                        {tableHeaders.map((v) => (
+                            <TableHeaderText style={{ width: "20%" }}>
+                                {v}
+                            </TableHeaderText>
+                        ))}
+                    </TableHeader>
 
-                    <TableDivider id="divider" />
+                    {/* <TableDivider id="divider" /> */}
 
-                    <Row id="table-container">
-                        <Section>
-                            <Table id="table">
-                                {tableData ? (
-                                    options.map((v, i) => (
-                                        <TableRow
-                                            option={v}
-                                            addToCart={addToCart}
-                                            data={tableData[i]}
-                                        />
-                                    ))
-                                ) : (
-                                    <Loading />
-                                )}
-                            </Table>
-                        </Section>
-                    </Row>
+                    <Table id="table">
+                        {tableData ? (
+                            options.map((v, i) => (
+                                <TableRow
+                                    option={v}
+                                    addToCart={addToCart}
+                                    data={tableData[i]}
+                                />
+                            ))
+                        ) : (
+                            <Loading />
+                        )}
+                    </Table>
                 </TableView>
 
                 <CartView id="cart-position-view">
