@@ -1,10 +1,10 @@
 import styled from "styled-components";
 
-const white = "#d9d9d9";
+const white = "#f9f9f9";
 
 const Button = styled.a`
     border-style: solid;
-    border-width: thin;
+    border-width: 0.15em;
     border-color: #f9f9f9;
     border-radius: 12px;
     text-decoration: none !important;

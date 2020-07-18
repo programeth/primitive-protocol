@@ -1,7 +1,8 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import Page from "../components/Page";
 import { Card } from "../components/Card";
-import { H1, Row } from "./Home";
+import { Row } from "./Home";
+import H1 from "../components/H1";
 import styled from "styled-components";
 import ethers from "ethers";
 import { useWeb3React } from "@web3-react/core";
