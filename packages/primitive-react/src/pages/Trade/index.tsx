@@ -39,6 +39,8 @@ import { parseEther } from "ethers/utils";
 import { getPair } from "../../lib/pool";
 import Positions from "./Positions";
 import { GasProvider } from "../../contexts/GasContext";
+import { UniswapProvider } from "../../contexts/UniswapContext";
+import { PrimitiveProvider } from "../../contexts/PrimitiveContext";
 
 type TradeProps = {
     web3?: any;
@@ -364,60 +366,68 @@ const Trade: FunctionComponent<TradeProps> = () => {
             <TradeView id="trade-view">
                 <PriceProvider>
                     <GasProvider>
-                        <div id="contexts"> </div>
+                        <PrimitiveProvider>
+                            <UniswapProvider>
+                                <div id="contexts"> </div>
 
-                        <TableView id="table-view">
-                            <Header />
+                                <TableView id="table-view">
+                                    <Header />
 
-                            <Row
-                                id="table-view-select-container"
-                                style={{ width: "100%" }}
-                            >
-                                <Section style={{ margin: "2em auto 2em 0" }}>
-                                    <TableButtons update={update} />
-                                </Section>
-                            </Row>
+                                    <Row
+                                        id="table-view-select-container"
+                                        style={{ width: "100%" }}
+                                    >
+                                        <Section
+                                            style={{ margin: "2em auto 2em 0" }}
+                                        >
+                                            <TableButtons update={update} />
+                                        </Section>
+                                    </Row>
 
-                            <TableHeader id="table-header">
-                                {tableHeaders.map((v) => (
-                                    <TableHeaderText style={{ width: "20%" }}>
-                                        {v}
-                                    </TableHeaderText>
-                                ))}
-                            </TableHeader>
+                                    <TableHeader id="table-header">
+                                        {tableHeaders.map((v) => (
+                                            <TableHeaderText
+                                                style={{ width: "20%" }}
+                                            >
+                                                {v}
+                                            </TableHeaderText>
+                                        ))}
+                                    </TableHeader>
 
-                            <Table id="table">
-                                {tableData ? (
-                                    options.map((v, i) => (
-                                        <TableRow
-                                            option={v}
-                                            addToCart={addToCart}
-                                            data={tableData[i]}
-                                        />
-                                    ))
-                                ) : (
-                                    <Loading />
-                                )}
-                            </Table>
-                        </TableView>
+                                    <Table id="table">
+                                        {tableData ? (
+                                            options.map((v, i) => (
+                                                <TableRow
+                                                    option={v}
+                                                    addToCart={addToCart}
+                                                    data={tableData[i]}
+                                                />
+                                            ))
+                                        ) : (
+                                            <Loading />
+                                        )}
+                                    </Table>
+                                </TableView>
 
-                        <CartView id="cart-position-view">
-                            <Cart
-                                cart={cart}
-                                submitOrder={submitOrder}
-                                gasSpend={gasSpend}
-                                ethPrice={ethereum?.usd}
-                                total={totalDebit}
-                            />
+                                <CartView id="cart-position-view">
+                                    <Cart
+                                        cart={cart}
+                                        submitOrder={submitOrder}
+                                        gasSpend={gasSpend}
+                                        ethPrice={ethereum?.usd}
+                                        total={totalDebit}
+                                    />
 
-                            <Positions
-                                cart={cart}
-                                submitOrder={submitOrder}
-                                gasSpend={gasSpend}
-                                ethPrice={ethereum?.usd}
-                                total={totalDebit}
-                            />
-                        </CartView>
+                                    <Positions
+                                        cart={cart}
+                                        submitOrder={submitOrder}
+                                        gasSpend={gasSpend}
+                                        ethPrice={ethereum?.usd}
+                                        total={totalDebit}
+                                    />
+                                </CartView>
+                            </UniswapProvider>
+                        </PrimitiveProvider>
                     </GasProvider>
                 </PriceProvider>
             </TradeView>

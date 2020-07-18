@@ -40,8 +40,8 @@ const checkUnderlyingBalance = async (signer, optionAddress) => {
     return bal;
 };
 
-const newOption = (signer, address) => {
-    const option = new ethers.Contract(address, Option.abi, signer);
+const newOption = (providerOrSigner, address) => {
+    const option = new ethers.Contract(address, Option.abi, providerOrSigner);
     console.log("Got option:", option.address);
     return option;
 };
@@ -199,8 +199,7 @@ const estimateMintGas = async (provider, address, amount) => {
 };
 
 const getOptionParameters = async (provider, optionAddress) => {
-    const signer: ethers.Signer = await provider.getSigner();
-    const option: any = await newOption(signer, optionAddress);
+    const option: any = await newOption(provider, optionAddress);
     const parameters = await option.getParameters();
     return parameters;
 };

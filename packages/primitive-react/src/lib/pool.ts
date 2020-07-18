@@ -17,8 +17,10 @@ const getPair = async (providerOrSigner, optionAddr) => {
     const chainId = providerOrSigner._network.chainId;
     let poolAddr = ethers.constants.AddressZero;
     if (chainId.toString() == "rinkeby" || "4") {
-        const signer = await providerOrSigner.getSigner();
-        const uniFac = new UniswapFactory(UniswapFactoryRinkeby, signer);
+        const uniFac = new UniswapFactory(
+            UniswapFactoryRinkeby,
+            providerOrSigner
+        );
         poolAddr = await uniFac.getPair(optionAddr, Stablecoin.address);
     }
 

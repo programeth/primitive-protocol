@@ -14,6 +14,8 @@ import CardItem from "./CardItem";
 import LeftText from "../../components/LeftText";
 import RightText from "../../components/RightText";
 import { GasContext } from "../../contexts/GasContext";
+import { PrimitiveContext } from "../../contexts/PrimitiveContext";
+import { UniswapContext } from "../../contexts/UniswapContext";
 
 const Wrapper = styled(Column)`
     margin: 0 auto 1em auto;
@@ -31,8 +33,6 @@ interface CartProps {
     total?: string;
 }
 
-const gasPriceApi = `https://ethgasstation.info/api/ethgasAPI.json`;
-
 const Cart: FunctionComponent<CartProps> = ({
     cart,
     submitOrder,
@@ -41,17 +41,15 @@ const Cart: FunctionComponent<CartProps> = ({
     total,
     children,
 }) => {
-    const [error, setError] = useState(null);
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [gas, setGas] = useState<any>();
+    const [gasData, setGasData] = useContext(GasContext);
+    const [primitiveData, setPrimitiveData] = useContext(PrimitiveContext);
+    const [uniswapData, setUniswapData] = useContext(UniswapContext);
     const [totalGasCost, setTotalGasCost] = useState<any>();
     const [premium, setPremium] = useState<any>("");
 
-    const [gasData, setGasData] = useContext(GasContext);
-
+    console.log({ uniswapData });
     const calculateGasCost = async () => {
         let cost;
-        console.log(gasData);
         if (gasData.gas) {
             cost = gasData?.gas?.fast / 10 ** 10;
             if (gasSpend) {
@@ -91,7 +89,12 @@ const Cart: FunctionComponent<CartProps> = ({
                             style={{ width: "25%" }}
                         ></Column>
                         <Column id="card-item-remove" style={{ width: "25%" }}>
-                            <RightText>$1.00</RightText>
+                            <RightText>
+                                ${" "}
+                                {uniswapData
+                                    ? (+uniswapData.premium).toFixed(2)
+                                    : "..."}
+                            </RightText>
                         </Column>
                     </CardItem>
                 ))}
