@@ -44,8 +44,10 @@ const Navbar: FunctionComponent<NavbarProps> = ({
 
     return (
         <Nav>
-            <Wrapper style={{ margin: "auto" }}>
-                <PrimitiveLogo width={50} height={50} />
+            <Wrapper
+                style={{ margin: "auto auto auto 112px", cursor: "pointer" }}
+            >
+                <PrimitiveLogo width={50} height={50} href="/" />
             </Wrapper>
 
             {web3React ? (
