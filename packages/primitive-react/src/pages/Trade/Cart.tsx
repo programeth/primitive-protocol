@@ -7,34 +7,32 @@ import Button from "../../components/Button";
 import Row from "../../components/Row";
 import Column from "../../components/Column";
 import Card from "./Card";
+import CardHeader from "./CardHeader";
+import CardItem from "./CardItem";
 
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: auto;
     width: auto;
+    margin: 0 auto 1em auto;
 `;
 
-const Inner = styled.div`
-    display: flex;
-    flex-direction: column;
-    background-color: #070707;
-    height: 15em;
-    border-radius: 2em;
-    padding: 16px;
-    margin-top: 7.5em;
+const Summary = styled(Column)`
+    padding: 1em;
 `;
 
 const Left = styled(H3)`
     display: flex;
     justify-content: flex-start;
-    width: 50%;
+    font-size: 1em;
+    font-weight: 700;
+    color: white;
 `;
 
 const Right = styled(H3)`
     display: flex;
     justify-content: flex-end;
-    width: 50%;
 `;
 
 interface CartProps {
@@ -105,62 +103,81 @@ const Cart: FunctionComponent<CartProps> = ({
             );
     }, [cart]);
     return (
-        <Wrapper>
-            <Card>
-                <div
-                    id="card-header"
-                    style={{ borderBottom: "solid 0.1em grey" }}
-                >
-                    <H1>Trade</H1>
-                </div>
-                <div id="card-body">
-                    <H3 color="grey">Details</H3>
-                    <Column>
-                        {cart.map((v, index) => (
-                            <Row style={{ width: "100%" }}>
-                                <Left>
-                                    {cart[index].substr(0, 6).concat("..")}
-                                </Left>
-                                <Right>${1}</Right>
-                            </Row>
-                        ))}
-                    </Column>
-                </div>
-                <div id="card-summary">
-                    <Inner>
-                        <H3 color="grey">Cost</H3>
-                        <Column>
-                            <Row style={{ width: "100%" }}>
-                                <Left>Premium</Left>
-                                <Right>$ {total ? total : "..."}</Right>
-                            </Row>
-                            <Row style={{ width: "100%" }}>
-                                <Left>Gas</Left>
-                                <Right>
-                                    ${" "}
-                                    {totalGasCost
-                                        ? totalGasCost.toString().substr(0, 4)
-                                        : "..."}{" "}
-                                </Right>
-                            </Row>
-                            <Row style={{ width: "100%" }}>
-                                <Left>Protocol</Left>
-                                <Right>$1.00</Right>
-                            </Row>
-                            <Button
-                                style={{
-                                    margin: "4em",
-                                    backgroundColor: "lightgreen",
-                                    color: "black",
-                                    borderColor: "lightgreen",
-                                }}
-                                onClick={() => submitOrder()}
-                            >
-                                Submit
-                            </Button>
+        <Wrapper id="cart">
+            <Card id="cart-card">
+                <CardHeader>Your Order</CardHeader>
+                {cart.map((v, index) => (
+                    <CardItem>
+                        <Column id="card-item-details" style={{ width: "50%" }}>
+                            <Left>{cart[index].substr(0, 6).concat("..")}</Left>
                         </Column>
-                    </Inner>
-                </div>
+                        <Column
+                            id="card-item-select"
+                            style={{ width: "25%" }}
+                        ></Column>
+                        <Column id="card-item-remove" style={{ width: "25%" }}>
+                            <Right>$1.00</Right>
+                        </Column>
+                    </CardItem>
+                ))}
+
+                <Summary id="cart-summary">
+                    <Row>
+                        <Column id="card-item-total" style={{ width: "50%" }}>
+                            <Left>Premium</Left>
+                        </Column>
+                        <Column
+                            id="card-item-total:price"
+                            style={{ width: "50%" }}
+                        >
+                            <Right>$ {total ? total : "..."}</Right>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column id="card-item-gas" style={{ width: "50%" }}>
+                            <Left>Gas</Left>
+                        </Column>
+                        <Column
+                            id="card-item-gas:price"
+                            style={{ width: "50%" }}
+                        >
+                            <Right>
+                                ${" "}
+                                {totalGasCost
+                                    ? (+totalGasCost).toFixed(2)
+                                    : "..."}{" "}
+                            </Right>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column
+                            id="card-item-protocol"
+                            style={{ width: "50%" }}
+                        >
+                            <Left>Protocol</Left>
+                        </Column>
+                        <Column
+                            id="card-item-protocol:price"
+                            style={{ width: "50%" }}
+                        >
+                            <Right>$1.00</Right>
+                        </Column>
+                    </Row>
+                </Summary>
+
+                <CardItem>
+                    <Button
+                        style={{
+                            margin: "auto",
+                            backgroundColor: "lightgreen",
+                            color: "black",
+                            borderColor: "lightgreen",
+                        }}
+                        onClick={() => submitOrder()}
+                    >
+                        Submit
+                    </Button>
+                </CardItem>
             </Card>
         </Wrapper>
     );

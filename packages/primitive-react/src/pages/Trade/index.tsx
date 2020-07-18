@@ -413,6 +413,7 @@ const Trade: FunctionComponent<TradeProps> = () => {
                         ethPrice={ethereum?.usd}
                         total={totalDebit}
                     />
+
                     <Positions
                         cart={cart}
                         submitOrder={submitOrder}
