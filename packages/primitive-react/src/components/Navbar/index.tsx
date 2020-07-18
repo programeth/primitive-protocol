@@ -1,16 +1,14 @@
 import React, { FunctionComponent, useState, useEffect } from "react";
 import { ReactComponent as PrimitiveLogo } from "../../icons/primitivelogo.svg";
-import { IConnected } from "../../App";
-import { Blockie } from "../utils/Blockie";
 import ethers from "ethers";
 import styled from "styled-components";
-import NavbarLink from "./NavbarLink";
 import NavRow from "./NavRow";
 import Wrapper from "./Wrapper";
 import Address from "../Address";
 import Button from "../Button";
-import H1 from "../H1";
 import { connect, disconnect } from "../../lib/web3";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import NotificationsIcon from "@material-ui/icons/Notifications";
 const { AddressZero } = ethers.constants;
 
 type NavbarProps = {
@@ -52,6 +50,12 @@ const Navbar: FunctionComponent<NavbarProps> = ({
 
             {web3React ? (
                 <NavRow>
+                    <Wrapper style={{ marginRight: "16px" }}>
+                        <NotificationsIcon style={{ color: "white" }} />
+                    </Wrapper>
+                    <Wrapper style={{ marginRight: "16px" }}>
+                        <AccountCircleIcon style={{ color: "white" }} />
+                    </Wrapper>
                     <Wrapper>
                         <Button
                             style={{ minHeight: "5vmin" }}
