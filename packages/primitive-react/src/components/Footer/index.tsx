@@ -1,5 +1,4 @@
 import React, { FunctionComponent } from "react";
-import { IConnected } from "../../App";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import IconButton from "@material-ui/core/IconButton";
@@ -8,11 +7,7 @@ import { ReactComponent as Medium } from "../../icons/medium_white.svg";
 import { ReactComponent as Built } from "../../icons/builtoneth.svg";
 import styled from "styled-components";
 
-type FooterProps = {
-    title?: string;
-    connected?: IConnected;
-    disconnect?: Function;
-};
+type FooterProps = {};
 
 const Foot = styled.div`
     padding: 8px;
@@ -41,17 +36,6 @@ const Row = styled.div`
     }
 `;
 
-/* const Typography = styled.p`
-    font-family: Nunito-sans;
-    font-size: 12px;
-    font-weight: 600;
-    text-decoration: none;
-    letter-spacing: 1px;
-    color: #5f5f5f;
-    text-align: center;
-    padding: 4px;
-`; */
-
 const Link = styled.a`
     font-family: "Nunito Sans";
     font-size: 12px;
@@ -74,11 +58,7 @@ const H1 = styled.h1`
     padding: 4px;
 `;
 
-const Footer: FunctionComponent<FooterProps> = ({
-    title,
-    connected,
-    disconnect,
-}) => {
+const Footer: FunctionComponent<FooterProps> = () => {
     return (
         <Foot id="footer">
             <Row id="footer:container">
@@ -86,11 +66,10 @@ const Footer: FunctionComponent<FooterProps> = ({
                     id="copyright"
                     style={{ alignContent: "flexStart", width: "100%" }}
                 >
-                    {/* <PrimitiveBanner /> */}
                     <H1>Primitive</H1>
                 </Column>
-                <Column id="footer:pages" style={{}}>
-                    <H1>Protocol Links</H1>
+                <Column id="footer:pages" style={{ width: "100%" }}>
+                    <H1 style={{ color: "lightgrey" }}>Protocol Links</H1>
                     <Link href="https://docs.primitive.finance/protocol-dashboard">
                         Protocol Overview
                     </Link>
