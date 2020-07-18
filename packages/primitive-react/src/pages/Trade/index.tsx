@@ -37,6 +37,7 @@ import Stablecoin from "@primitivefi/contracts/deployments/rinkeby/USDC.json";
 import Ether from "@primitivefi/contracts/deployments/rinkeby/ETH.json";
 import { parseEther } from "ethers/utils";
 import { getPair } from "../../lib/pool";
+import Positions from "./Positions";
 
 type TradeProps = {
     web3?: any;
@@ -90,6 +91,8 @@ const TableView = styled(Column)`
 
 const CartView = styled(Column)`
     width: 35%;
+    display: flex;
+    flex-direction: column;
 `;
 
 const ethPriceApi =
@@ -404,6 +407,13 @@ const Trade: FunctionComponent<TradeProps> = () => {
 
                 <CartView id="cart-position-view">
                     <Cart
+                        cart={cart}
+                        submitOrder={submitOrder}
+                        gasSpend={gasSpend}
+                        ethPrice={ethereum?.usd}
+                        total={totalDebit}
+                    />
+                    <Positions
                         cart={cart}
                         submitOrder={submitOrder}
                         gasSpend={gasSpend}

@@ -37,7 +37,7 @@ const Right = styled(H3)`
     width: 50%;
 `;
 
-interface CartProps {
+interface PositionsProps {
     cart: string[];
     submitOrder: Function;
     gasSpend?: string;
@@ -47,7 +47,7 @@ interface CartProps {
 
 const gasPriceApi = `https://ethgasstation.info/api/ethgasAPI.json`;
 
-const Cart: FunctionComponent<CartProps> = ({
+const Positions: FunctionComponent<PositionsProps> = ({
     cart,
     submitOrder,
     gasSpend,
@@ -166,4 +166,4 @@ const Cart: FunctionComponent<CartProps> = ({
     );
 };
 
-export default Cart;
+export default Positions;
