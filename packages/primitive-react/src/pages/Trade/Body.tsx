@@ -15,6 +15,12 @@ const BodyContainer = styled.div`
     width: calc(1248px + 16px * 2);
 `;
 
+const PositionButtons = styled(Button)`
+    color: ${(props) => (props.selected ? "lightgreen" : "lightgrey")};
+    background-color: ${(props) => (props.selected ? "#181818" : "black")};
+    border: none;
+`;
+
 const Body: FunctionComponent<any> = ({ update }) => {
     const [isBuy, setIsBuy] = useState<boolean>(true);
     const [isCall, setIsCall] = useState<boolean>(true);
@@ -30,31 +36,34 @@ const Body: FunctionComponent<any> = ({ update }) => {
     };
 
     return (
-        <BodyContainer id="trade:body/container">
+        <BodyContainer id="trade-selection-body">
             <Row style={{ width: "25%" }}>
-                <Button selected={isBuy} onClick={() => handleBuyChange(true)}>
+                <PositionButtons
+                    selected={isBuy}
+                    onClick={() => handleBuyChange(true)}
+                >
                     Buy
-                </Button>
-                <Button
+                </PositionButtons>
+                <PositionButtons
                     selected={!isBuy}
                     onClick={() => handleBuyChange(false)}
                 >
                     Sell
-                </Button>
+                </PositionButtons>
             </Row>
             <Row style={{ width: "25%" }}>
-                <Button
+                <PositionButtons
                     selected={isCall}
                     onClick={() => handleCallChange(true)}
                 >
                     Calls
-                </Button>
-                <Button
+                </PositionButtons>
+                <PositionButtons
                     selected={!isCall}
                     onClick={() => handleCallChange(false)}
                 >
                     Puts
-                </Button>
+                </PositionButtons>
             </Row>
             <Row style={{ width: "50%" }}>
                 <Dropdown /* setExpiry={setExpiry} */ />

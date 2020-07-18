@@ -20,7 +20,8 @@ const Select = styled.select`
     margin: 0;
     max-height: 30em;
     padding: 0 1em;
-    border-radius: 1em;
+    border-radius: 0.5em;
+    border-color: #212121;
     background-position: right 50%;
     background-repeat: no-repeat;
     cursor: pointer;

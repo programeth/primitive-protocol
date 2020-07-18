@@ -39,6 +39,7 @@ const Item = styled.div`
     height: 10vmin;
     display: flex;
     align-items: center;
+    border-top: ${(props) => (props.border ? "solid 0.1em #212121" : "none")};
 `;
 
 const TRow = styled(Row)`
@@ -77,7 +78,7 @@ const TableRow: FunctionComponent<any> = ({ option, addToCart, data }) => {
         <TRow id="table-row">
             {tableItems ? (
                 tableItems.map((v, index) => (
-                    <Item id={index}>
+                    <Item id={index} border>
                         <H3>{v}</H3>
                     </Item>
                 ))
@@ -85,7 +86,7 @@ const TableRow: FunctionComponent<any> = ({ option, addToCart, data }) => {
                 <Loading />
             )}
             <Item>
-                <Item onClick={() => addToCart(option)}>
+                <Item onClick={() => addToCart(option)} border>
                     <H3>
                         ${" "}
                         {data ? (data?.pair?.premium).toFixed(2) : <Loading />}
