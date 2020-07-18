@@ -20,7 +20,7 @@ type NavbarProps = {
 };
 
 const Nav = styled.div`
-    padding: 8px;
+    padding: 16px;
     display: flex;
     flex-direction: row;
     background-color: #040404;
@@ -46,13 +46,8 @@ const Navbar: FunctionComponent<NavbarProps> = ({
 
     return (
         <Nav>
-            <Wrapper>
+            <Wrapper style={{ margin: "auto" }}>
                 <PrimitiveLogo width={50} height={50} />
-            </Wrapper>
-            <Wrapper>
-                <NavbarLink to="/">
-                    <H1>{title}</H1>
-                </NavbarLink>
             </Wrapper>
 
             {web3React ? (
