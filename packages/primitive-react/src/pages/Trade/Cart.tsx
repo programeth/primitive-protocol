@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, {
+    FunctionComponent,
+    useEffect,
+    useState,
+    useContext,
+} from "react";
 import styled from "styled-components";
 import Button from "../../components/Button";
 import Row from "../../components/Row";
@@ -8,6 +13,7 @@ import CardHeader from "./CardHeader";
 import CardItem from "./CardItem";
 import LeftText from "../../components/LeftText";
 import RightText from "../../components/RightText";
+import { GasContext } from "../../contexts/GasContext";
 
 const Wrapper = styled(Column)`
     margin: 0 auto 1em auto;
@@ -41,10 +47,13 @@ const Cart: FunctionComponent<CartProps> = ({
     const [totalGasCost, setTotalGasCost] = useState<any>();
     const [premium, setPremium] = useState<any>("");
 
+    const [gasData, setGasData] = useContext(GasContext);
+
     const calculateGasCost = async () => {
         let cost;
-        if (gas) {
-            cost = gas / 10 ** 9;
+        console.log(gasData);
+        if (gasData.gas) {
+            cost = gasData?.gas?.fast / 10 ** 10;
             if (gasSpend) {
                 cost = cost * +gasSpend;
                 if (ethPrice) {
@@ -64,27 +73,8 @@ const Cart: FunctionComponent<CartProps> = ({
             setTotalGasCost(total);
         }
         calcGas();
-    });
+    }, [cart, gasData.isLoaded]);
 
-    useEffect(() => {
-        fetch(gasPriceApi)
-            .then((res) => res.json())
-            .then(
-                (result) => {
-                    setIsLoaded(true);
-                    setGas(result.fast / 10);
-                    console.log(result);
-                },
-                // Note: it's important to handle errors here
-                // instead of a catch() block so that we don't swallow
-                // exceptions from actual bugs in components.
-                (error) => {
-                    setIsLoaded(true);
-                    setError(error);
-                    console.log(isLoaded);
-                }
-            );
-    }, [cart]);
     return (
         <Wrapper id="cart">
             <Card id="cart-card">
