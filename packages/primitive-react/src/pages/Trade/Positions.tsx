@@ -1,38 +1,18 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import styled from "styled-components";
-import H1 from "../../components/H1";
-import H2 from "../../components/H2";
-import H3 from "../../components/H3";
-import Button from "../../components/Button";
-import Row from "../../components/Row";
 import Column from "../../components/Column";
-import Card from "./Card";
+import Card from "../../components/Card";
 import CardHeader from "./CardHeader";
 import CardItem from "./CardItem";
+import LeftText from "../../components/LeftText";
+import RightText from "../../components/RightText";
 
-const Wrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    height: auto;
-    width: auto;
+const Wrapper = styled(Column)`
     margin: 0 auto 1em auto;
 `;
 
 const Summary = styled(Column)`
     padding: 1em;
-`;
-
-const Left = styled(H3)`
-    display: flex;
-    justify-content: flex-start;
-    font-size: 1em;
-    font-weight: 700;
-    color: white;
-`;
-
-const Right = styled(H3)`
-    display: flex;
-    justify-content: flex-end;
 `;
 
 interface PositionsProps {
@@ -51,6 +31,7 @@ const Positions: FunctionComponent<PositionsProps> = ({
     gasSpend,
     ethPrice,
     total,
+    children,
 }) => {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -109,19 +90,21 @@ const Positions: FunctionComponent<PositionsProps> = ({
                 {cart.map((v, index) => (
                     <CardItem>
                         <Column id="card-item-details" style={{ width: "50%" }}>
-                            <Left>{cart[index].substr(0, 6).concat("..")}</Left>
+                            <LeftText>
+                                {cart[index].substr(0, 6).concat("..")}
+                            </LeftText>
                         </Column>
                         <Column
                             id="card-item-select"
                             style={{ width: "25%" }}
                         ></Column>
                         <Column id="card-item-remove" style={{ width: "25%" }}>
-                            <Right>$1.00</Right>
+                            <RightText>$1.00</RightText>
                         </Column>
                     </CardItem>
                 ))}
 
-                <Summary id="positions-summary"></Summary>
+                <Summary id="positions-summary">{children}</Summary>
             </Card>
         </Wrapper>
     );

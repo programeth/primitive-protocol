@@ -8,7 +8,7 @@ import TableRow from "./TableRow";
 import styled from "styled-components";
 import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
-import Section from "./Section";
+import Section from "../../components/Section";
 import Dropdown from "./Dropdown";
 import Cart from "./Cart";
 import Loading from "../../components/Loading";
@@ -22,7 +22,7 @@ import ethers from "ethers";
 import Header from "./Header";
 import Row from "../../components/Row";
 import Column from "../../components/Column";
-import Body from "./Body";
+import TableButtons from "./TableButtons";
 import PriceContext from "./context/PriceContext";
 import {
     Trader,
@@ -358,10 +358,6 @@ const Trade: FunctionComponent<TradeProps> = () => {
         }
     };
 
-    const TableDivider = styled.div`
-        border-top: solid 0.1em lightgrey;
-    `;
-
     return (
         <Page web3React={web3React} injected={injected}>
             <TradeView id="trade-view">
@@ -370,13 +366,14 @@ const Trade: FunctionComponent<TradeProps> = () => {
                 <div id="contexts"> </div>
 
                 <TableView id="table-view">
-                    <Column id="table-view-header">
-                        <Header />
-                    </Column>
+                    <Header />
 
-                    <Row id="table-view-select-container">
-                        <Section>
-                            <Body update={update} />
+                    <Row
+                        id="table-view-select-container"
+                        style={{ width: "100%" }}
+                    >
+                        <Section style={{ margin: "2em auto 2em 0" }}>
+                            <TableButtons update={update} />
                         </Section>
                     </Row>
 
@@ -387,8 +384,6 @@ const Trade: FunctionComponent<TradeProps> = () => {
                             </TableHeaderText>
                         ))}
                     </TableHeader>
-
-                    {/* <TableDivider id="divider" /> */}
 
                     <Table id="table">
                         {tableData ? (
@@ -422,61 +417,6 @@ const Trade: FunctionComponent<TradeProps> = () => {
                         total={totalDebit}
                     />
                 </CartView>
-
-                {/* <Column style={{ width: "80%" }}>
-                    <View id="trade:page">
-                        <Section id="trade:header">
-                            <Header />
-                        </Section>
-                        <Section id="trade:body">
-                            <Body update={update} />
-                        </Section>
-                        <Section
-                            id="trade:table-header"
-                            style={{ marginBottom: "0" }}
-                        >
-                            <TableHeader id="table-header">
-                                <Row style={{ width: "80%" }}>
-                                    {tableHeaders.map((v) => (
-                                        <H3 style={{ width: "20%" }}>{v}</H3>
-                                    ))}
-                                </Row>
-                            </TableHeader>
-                        </Section>
-                    </View>
-
-                    <div style={{ borderTop: "solid 0.1em lightgrey" }} />
-                    <View style={{ paddingTop: "0px", height: "75vmin" }}>
-                        <Section id="trade:table">
-                            <Table>
-                                {tableData ? (
-                                    options.map((v, i) => (
-                                        <TableRow
-                                            option={v}
-                                            addToCart={addToCart}
-                                            data={tableData[i]}
-                                        />
-                                    ))
-                                ) : (
-                                    <Loading />
-                                )}
-                            </Table>
-                        </Section>
-                    </View>
-                </Column>
-                <Column style={{ paddingTop: "125px" }}>
-                    <Row>
-                        <Section>
-                            <Cart
-                                cart={cart}
-                                submitOrder={submitOrder}
-                                gasSpend={gasSpend}
-                                ethPrice={ethereum?.usd}
-                                total={totalDebit}
-                            />
-                        </Section>
-                    </Row>
-                </Column> */}
             </TradeView>
         </Page>
     );

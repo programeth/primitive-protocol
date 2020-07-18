@@ -1,38 +1,20 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import styled from "styled-components";
-import H1 from "../../components/H1";
-import H2 from "../../components/H2";
-import H3 from "../../components/H3";
 import Button from "../../components/Button";
 import Row from "../../components/Row";
 import Column from "../../components/Column";
-import Card from "./Card";
+import Card from "../../components/Card";
 import CardHeader from "./CardHeader";
 import CardItem from "./CardItem";
+import LeftText from "../../components/LeftText";
+import RightText from "../../components/RightText";
 
-const Wrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    height: auto;
-    width: auto;
+const Wrapper = styled(Column)`
     margin: 0 auto 1em auto;
 `;
 
 const Summary = styled(Column)`
     padding: 1em;
-`;
-
-const Left = styled(H3)`
-    display: flex;
-    justify-content: flex-start;
-    font-size: 1em;
-    font-weight: 700;
-    color: white;
-`;
-
-const Right = styled(H3)`
-    display: flex;
-    justify-content: flex-end;
 `;
 
 interface CartProps {
@@ -51,6 +33,7 @@ const Cart: FunctionComponent<CartProps> = ({
     gasSpend,
     ethPrice,
     total,
+    children,
 }) => {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -109,14 +92,16 @@ const Cart: FunctionComponent<CartProps> = ({
                 {cart.map((v, index) => (
                     <CardItem>
                         <Column id="card-item-details" style={{ width: "50%" }}>
-                            <Left>{cart[index].substr(0, 6).concat("..")}</Left>
+                            <LeftText>
+                                {cart[index].substr(0, 6).concat("..")}
+                            </LeftText>
                         </Column>
                         <Column
                             id="card-item-select"
                             style={{ width: "25%" }}
                         ></Column>
                         <Column id="card-item-remove" style={{ width: "25%" }}>
-                            <Right>$1.00</Right>
+                            <RightText>$1.00</RightText>
                         </Column>
                     </CardItem>
                 ))}
@@ -124,60 +109,62 @@ const Cart: FunctionComponent<CartProps> = ({
                 <Summary id="cart-summary">
                     <Row>
                         <Column id="card-item-total" style={{ width: "50%" }}>
-                            <Left>Premium</Left>
+                            <LeftText>Premium</LeftText>
                         </Column>
                         <Column
                             id="card-item-total:price"
                             style={{ width: "50%" }}
                         >
-                            <Right>$ {total ? total : "..."}</Right>
+                            <RightText>$ {total ? total : "..."}</RightText>
                         </Column>
                     </Row>
+
                     <Row>
                         <Column id="card-item-gas" style={{ width: "50%" }}>
-                            <Left>Gas</Left>
+                            <LeftText>Gas</LeftText>
                         </Column>
                         <Column
                             id="card-item-gas:price"
                             style={{ width: "50%" }}
                         >
-                            <Right>
+                            <RightText>
                                 ${" "}
                                 {totalGasCost
                                     ? (+totalGasCost).toFixed(2)
                                     : "..."}{" "}
-                            </Right>
+                            </RightText>
                         </Column>
                     </Row>
+
                     <Row>
                         <Column
                             id="card-item-protocol"
                             style={{ width: "50%" }}
                         >
-                            <Left>Protocol</Left>
+                            <LeftText>Protocol</LeftText>
                         </Column>
                         <Column
                             id="card-item-protocol:price"
                             style={{ width: "50%" }}
                         >
-                            <Right>$1.00</Right>
+                            <RightText>$1.00</RightText>
                         </Column>
                     </Row>
-                </Summary>
 
-                <CardItem>
-                    <Button
-                        style={{
-                            margin: "auto",
-                            backgroundColor: "lightgreen",
-                            color: "black",
-                            borderColor: "lightgreen",
-                        }}
-                        onClick={() => submitOrder()}
-                    >
-                        Submit
-                    </Button>
-                </CardItem>
+                    <CardItem>
+                        <Button
+                            style={{
+                                margin: "auto",
+                                backgroundColor: "lightgreen",
+                                color: "black",
+                                borderColor: "lightgreen",
+                            }}
+                            onClick={() => submitOrder()}
+                        >
+                            Submit
+                        </Button>
+                    </CardItem>
+                </Summary>
             </Card>
         </Wrapper>
     );

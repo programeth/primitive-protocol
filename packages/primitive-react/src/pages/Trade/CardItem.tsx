@@ -1,7 +1,5 @@
-import React, { FunctionComponent /* useEffect, useState */ } from "react";
+import React, { FunctionComponent } from "react";
 import styled from "styled-components";
-import { useState } from "react";
-import { useEffect } from "react";
 import Row from "../../components/Row";
 
 const Wrapper = styled.div`
@@ -15,8 +13,6 @@ const Wrapper = styled.div`
     max-height: 30em;
     border: none;
     border-color: #212121;
-    background-position: right 50%;
-    background-repeat: no-repeat;
     border-bottom: solid thin #333333;
     padding: 1em;
 `;

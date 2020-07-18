@@ -1,13 +1,6 @@
-import React, { FunctionComponent /* useEffect, useState */ } from "react";
+import React, { FunctionComponent, useState, useEffect } from "react";
 import styled from "styled-components";
-import { useState } from "react";
-import { useEffect } from "react";
-
-const Wrapper = styled.div`
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-`;
+import Row from "../../components/Row";
 
 const Select = styled.select`
     display: flex;
@@ -40,11 +33,11 @@ const CardHeader: FunctionComponent<CardHeaderProps> = ({ children }) => {
     const [value, setValue] = useState<any>();
     useEffect(() => {}, [value]);
     return (
-        <Wrapper id="card-header">
+        <Row id="card-header">
             <Select id="order-dropdown" name="order" value={value}>
                 <Option value="cart">{children}</Option>
             </Select>
-        </Wrapper>
+        </Row>
     );
 };
 

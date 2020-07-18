@@ -9,12 +9,6 @@ import PriceContext from "./context/PriceContext";
 import TrendingUpIcon from "@material-ui/icons/TrendingUp";
 import TrendingDownIcon from "@material-ui/icons/TrendingDown";
 
-const HeaderContainer = styled.div`
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-`;
-
 const Header: FunctionComponent<any> = () => {
     const { ethereum, isLoaded } = useContext(PriceContext);
 
@@ -39,7 +33,7 @@ const Header: FunctionComponent<any> = () => {
     useEffect(() => {}, [ethereum]);
 
     return (
-        <HeaderContainer>
+        <Row id="trade-view-header">
             <Column style={{ width: "25%" }}>
                 <H2>Ether</H2>
                 <H2>
@@ -64,7 +58,7 @@ const Header: FunctionComponent<any> = () => {
                     <H3 color="grey">Today</H3>
                 </Row>
             </Column>
-        </HeaderContainer>
+        </Row>
     );
 };
 
