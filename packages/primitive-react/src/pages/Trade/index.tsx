@@ -23,7 +23,7 @@ import Header from "./Header";
 import Row from "../../components/Row";
 import Column from "../../components/Column";
 import TableButtons from "./TableButtons";
-import PriceContext from "./context/PriceContext";
+import { PriceProvider } from "../../contexts/PriceContext";
 import {
     Trader,
     Option,
@@ -361,62 +361,62 @@ const Trade: FunctionComponent<TradeProps> = () => {
     return (
         <Page web3React={web3React} injected={injected}>
             <TradeView id="trade-view">
-                <PriceContext.Provider value={{ ethereum, isLoaded, error }} />
+                <PriceProvider>
+                    <div id="contexts"> </div>
 
-                <div id="contexts"> </div>
+                    <TableView id="table-view">
+                        <Header />
 
-                <TableView id="table-view">
-                    <Header />
+                        <Row
+                            id="table-view-select-container"
+                            style={{ width: "100%" }}
+                        >
+                            <Section style={{ margin: "2em auto 2em 0" }}>
+                                <TableButtons update={update} />
+                            </Section>
+                        </Row>
 
-                    <Row
-                        id="table-view-select-container"
-                        style={{ width: "100%" }}
-                    >
-                        <Section style={{ margin: "2em auto 2em 0" }}>
-                            <TableButtons update={update} />
-                        </Section>
-                    </Row>
+                        <TableHeader id="table-header">
+                            {tableHeaders.map((v) => (
+                                <TableHeaderText style={{ width: "20%" }}>
+                                    {v}
+                                </TableHeaderText>
+                            ))}
+                        </TableHeader>
 
-                    <TableHeader id="table-header">
-                        {tableHeaders.map((v) => (
-                            <TableHeaderText style={{ width: "20%" }}>
-                                {v}
-                            </TableHeaderText>
-                        ))}
-                    </TableHeader>
+                        <Table id="table">
+                            {tableData ? (
+                                options.map((v, i) => (
+                                    <TableRow
+                                        option={v}
+                                        addToCart={addToCart}
+                                        data={tableData[i]}
+                                    />
+                                ))
+                            ) : (
+                                <Loading />
+                            )}
+                        </Table>
+                    </TableView>
 
-                    <Table id="table">
-                        {tableData ? (
-                            options.map((v, i) => (
-                                <TableRow
-                                    option={v}
-                                    addToCart={addToCart}
-                                    data={tableData[i]}
-                                />
-                            ))
-                        ) : (
-                            <Loading />
-                        )}
-                    </Table>
-                </TableView>
+                    <CartView id="cart-position-view">
+                        <Cart
+                            cart={cart}
+                            submitOrder={submitOrder}
+                            gasSpend={gasSpend}
+                            ethPrice={ethereum?.usd}
+                            total={totalDebit}
+                        />
 
-                <CartView id="cart-position-view">
-                    <Cart
-                        cart={cart}
-                        submitOrder={submitOrder}
-                        gasSpend={gasSpend}
-                        ethPrice={ethereum?.usd}
-                        total={totalDebit}
-                    />
-
-                    <Positions
-                        cart={cart}
-                        submitOrder={submitOrder}
-                        gasSpend={gasSpend}
-                        ethPrice={ethereum?.usd}
-                        total={totalDebit}
-                    />
-                </CartView>
+                        <Positions
+                            cart={cart}
+                            submitOrder={submitOrder}
+                            gasSpend={gasSpend}
+                            ethPrice={ethereum?.usd}
+                            total={totalDebit}
+                        />
+                    </CartView>
+                </PriceProvider>
             </TradeView>
         </Page>
     );
