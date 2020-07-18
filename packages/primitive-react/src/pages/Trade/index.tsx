@@ -333,18 +333,87 @@ const Trade: FunctionComponent<TradeProps> = () => {
         }
     };
 
+    const TradeView = styled(Row)`
+        margin: 128px;
+        @media (max-width: 375px) {
+            margin: 48px auto;
+        }
+    `;
+
+    const TableView = styled(Column)`
+        width: 65%;
+    `;
+
+    const CartView = styled(Column)`
+        width: 35%;
+    `;
+
+    const TableDivider = styled.div`
+        border-top: solid 0.1em lightgrey;
+    `;
+
     return (
         <Page web3React={web3React} injected={injected}>
-            <Row>
-                <Button
-                    onClick={async () => {
-                        options.map((v) => getTableData(v));
-                    }}
-                >
-                    Test
-                </Button>
+            <TradeView id="trade-view">
                 <PriceContext.Provider value={{ ethereum, isLoaded, error }} />
-                <Column style={{ width: "80%" }}>
+
+                <div id="contexts"> </div>
+
+                <TableView id="table-view">
+                    <Column id="table-view-header">
+                        <Header />
+                    </Column>
+
+                    <Row id="table-view-select-container">
+                        <Section>
+                            <Body update={update} />
+                        </Section>
+                    </Row>
+
+                    <Row id="table-header">
+                        <Section>
+                            <TableHeader id="table-header">
+                                <Row style={{ width: "80%" }}>
+                                    {tableHeaders.map((v) => (
+                                        <H3 style={{ width: "20%" }}>{v}</H3>
+                                    ))}
+                                </Row>
+                            </TableHeader>
+                        </Section>
+                    </Row>
+
+                    <TableDivider id="divider" />
+
+                    <Row id="table-container">
+                        <Section>
+                            <Table id="table">
+                                {tableData ? (
+                                    options.map((v, i) => (
+                                        <TableRow
+                                            option={v}
+                                            addToCart={addToCart}
+                                            data={tableData[i]}
+                                        />
+                                    ))
+                                ) : (
+                                    <Loading />
+                                )}
+                            </Table>
+                        </Section>
+                    </Row>
+                </TableView>
+
+                <CartView id="cart-position-view">
+                    <Cart
+                        cart={cart}
+                        submitOrder={submitOrder}
+                        gasSpend={gasSpend}
+                        ethPrice={ethereum?.usd}
+                        total={totalDebit}
+                    />
+                </CartView>
+
+                {/* <Column style={{ width: "80%" }}>
                     <View id="trade:page">
                         <Section id="trade:header">
                             <Header />
@@ -397,8 +466,8 @@ const Trade: FunctionComponent<TradeProps> = () => {
                             />
                         </Section>
                     </Row>
-                </Column>
-            </Row>
+                </Column> */}
+            </TradeView>
         </Page>
     );
 };
