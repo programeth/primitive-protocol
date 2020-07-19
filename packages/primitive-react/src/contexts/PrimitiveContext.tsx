@@ -1,22 +1,9 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { useWeb3React } from "@web3-react/core";
-import {
-    Trader,
-    Option,
-    UniswapFactory,
-    UniswapRouter,
-    UniswapPair,
-    Token,
-} from "@primitivefi/sdk";
-import TraderDeployed from "@primitivefi/contracts/deployments/rinkeby/Trader.json";
-import Stablecoin from "@primitivefi/contracts/deployments/rinkeby/USDC.json";
-import Ether from "@primitivefi/contracts/deployments/rinkeby/ETH.json";
-import { parseEther } from "ethers/utils";
 import { getOptionParameters } from "../lib/option";
 import { ethers } from "ethers";
 
 const OPTIONS_ARRAY = ["0x6AFAC69a1402b810bDB5733430122264b7980b6b"];
-
 const PrimitiveContext = createContext<any[]>([]);
 
 const PrimitiveProvider = (props) => {

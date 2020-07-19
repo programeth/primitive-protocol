@@ -1,8 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import Page from "../../components/Page";
-import Button from "../../components/Button";
-import H1 from "../../components/H1";
-import H2 from "../../components/H2";
 import H3 from "../../components/H3";
 import TableRow from "./TableRow";
 import styled from "styled-components";
@@ -41,6 +38,7 @@ import Positions from "./Positions";
 import { GasProvider } from "../../contexts/GasContext";
 import { UniswapProvider } from "../../contexts/UniswapContext";
 import { PrimitiveProvider } from "../../contexts/PrimitiveContext";
+import { OrderProvider } from "../../contexts/OrderContext";
 
 type TradeProps = {
     web3?: any;
@@ -115,6 +113,7 @@ const Trade: FunctionComponent<TradeProps> = () => {
         supportedChainIds: [1, 3, 4, 5, 42],
     });
     const web3React = useWeb3React();
+    const provider = web3React.library || ethers.getDefaultProvider("rinkeby");
 
     const addToCart = (option) => {
         setCart(cart.concat(option.toString()));
@@ -142,7 +141,7 @@ const Trade: FunctionComponent<TradeProps> = () => {
         calcPremium();
     }, [cart]);
 
-    const update = (isBuy, isCall) => {
+    const updateTable = (isBuy, isCall) => {
         setIsCall(isCall);
         setIsBuy(isBuy);
     };
@@ -193,24 +192,19 @@ const Trade: FunctionComponent<TradeProps> = () => {
 
     useEffect(() => {
         async function updateParams() {
-            if (web3React.library) {
-                const provider: ethers.providers.Web3Provider =
-                    web3React.library;
-                let params = await getOptionParameters(
-                    provider,
-                    "0x6AFAC69a1402b810bDB5733430122264b7980b6b"
-                );
-                setParameters(params);
-                let data = await getTable();
-                setTableData(data);
-            }
+            let params = await getOptionParameters(
+                provider,
+                "0x6AFAC69a1402b810bDB5733430122264b7980b6b"
+            );
+            setParameters(params);
+            let data = await getTable();
+            setTableData(data);
         }
         updateParams();
     }, [web3React.library]);
 
     const getPremium = async (optionAddress) => {
-        const provider = web3React.library;
-        const pairAddress = await getPair(web3React.library, optionAddress);
+        const pairAddress = await getPair(provider, optionAddress);
         // need price to calc premium + breakeven, total liquidity for option, volume
         const pair = new UniswapPair(pairAddress, await provider.getSigner());
         const token0 = await pair.token0();
@@ -231,10 +225,9 @@ const Trade: FunctionComponent<TradeProps> = () => {
 
     const getPairData = async () => {
         const optionAddress = "0x6AFAC69a1402b810bDB5733430122264b7980b6b";
-        const provider = web3React.library;
-        const pairAddress = await getPair(web3React.library, optionAddress);
+        const pairAddress = await getPair(provider, optionAddress);
         // need price to calc premium + breakeven, total liquidity for option, volume
-        const pair = new UniswapPair(pairAddress, await provider.getSigner());
+        const pair = new UniswapPair(pairAddress, provider);
         const token0 = await pair.token0();
         const reserves = await pair.getReserves();
         let premium = 0;
@@ -253,49 +246,17 @@ const Trade: FunctionComponent<TradeProps> = () => {
         return { premium, openInterest };
     };
 
-    const getPriceData = () => {
-        return ethereum ? ethereum?.usd : "...";
-    };
-
     const getOptionParams = async (optionAddress) => {
-        const provider = web3React.library;
         const params = await getOptionParameters(provider, optionAddress);
         return params;
     };
 
     const getTableData = async (optionAddress) => {
         let params = await getOptionParams(optionAddress);
-        let price = getPriceData();
+        let price = "100";
         let pair = await getPairData();
         return { params, price, pair };
     };
-
-    const [error, setError] = useState(null);
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [ethereum, setEthereum] = useState<any>();
-
-    // Note: the empty deps array [] means
-    // this useEffect will run once
-    // similar to componentDidMount()
-    useEffect(() => {
-        fetch(ethPriceApi)
-            .then((res) => res.json())
-            .then(
-                (result) => {
-                    setIsLoaded(true);
-                    setEthereum(result.ethereum);
-                    console.log(result);
-                },
-                // Note: it's important to handle errors here
-                // instead of a catch() block so that we don't swallow
-                // exceptions from actual bugs in components.
-                (error) => {
-                    setIsLoaded(true);
-                    setError(error);
-                    console.log(isLoaded);
-                }
-            );
-    }, []);
 
     const testFunc = async () => {
         if (web3React.library) {
@@ -368,64 +329,64 @@ const Trade: FunctionComponent<TradeProps> = () => {
                     <GasProvider>
                         <PrimitiveProvider>
                             <UniswapProvider>
-                                <div id="contexts"> </div>
+                                <OrderProvider>
+                                    <TableView id="table-view">
+                                        <Header />
 
-                                <TableView id="table-view">
-                                    <Header />
-
-                                    <Row
-                                        id="table-view-select-container"
-                                        style={{ width: "100%" }}
-                                    >
-                                        <Section
-                                            style={{ margin: "2em auto 2em 0" }}
+                                        <Row
+                                            id="table-view-select-container"
+                                            style={{ width: "100%" }}
                                         >
-                                            <TableButtons update={update} />
-                                        </Section>
-                                    </Row>
-
-                                    <TableHeader id="table-header">
-                                        {tableHeaders.map((v) => (
-                                            <TableHeaderText
-                                                style={{ width: "20%" }}
+                                            <Section
+                                                style={{
+                                                    margin: "2em auto 2em 0",
+                                                }}
                                             >
-                                                {v}
-                                            </TableHeaderText>
-                                        ))}
-                                    </TableHeader>
-
-                                    <Table id="table">
-                                        {tableData ? (
-                                            options.map((v, i) => (
-                                                <TableRow
-                                                    option={v}
-                                                    addToCart={addToCart}
-                                                    data={tableData[i]}
+                                                <TableButtons
+                                                    update={updateTable}
                                                 />
-                                            ))
-                                        ) : (
-                                            <Loading />
-                                        )}
-                                    </Table>
-                                </TableView>
+                                            </Section>
+                                        </Row>
 
-                                <CartView id="cart-position-view">
-                                    <Cart
+                                        <TableHeader id="table-header">
+                                            {tableHeaders.map((v) => (
+                                                <TableHeaderText
+                                                    style={{ width: "20%" }}
+                                                >
+                                                    {v}
+                                                </TableHeaderText>
+                                            ))}
+                                        </TableHeader>
+
+                                        <Table id="table">
+                                            {tableData ? (
+                                                options.map((v, i) => (
+                                                    <TableRow
+                                                        option={v}
+                                                        data={tableData[i]}
+                                                    />
+                                                ))
+                                            ) : (
+                                                <Loading />
+                                            )}
+                                        </Table>
+                                    </TableView>
+
+                                    <CartView id="cart-position-view">
+                                        <Cart
+                                            cart={cart}
+                                            submitOrder={submitOrder}
+                                        />
+
+                                        {/* <Positions
                                         cart={cart}
                                         submitOrder={submitOrder}
                                         gasSpend={gasSpend}
-                                        ethPrice={ethereum?.usd}
+                                        ethPrice={"100"}
                                         total={totalDebit}
-                                    />
-
-                                    <Positions
-                                        cart={cart}
-                                        submitOrder={submitOrder}
-                                        gasSpend={gasSpend}
-                                        ethPrice={ethereum?.usd}
-                                        total={totalDebit}
-                                    />
-                                </CartView>
+                                    /> */}
+                                    </CartView>
+                                </OrderProvider>
                             </UniswapProvider>
                         </PrimitiveProvider>
                     </GasProvider>

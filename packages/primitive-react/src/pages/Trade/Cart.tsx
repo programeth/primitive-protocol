@@ -16,6 +16,8 @@ import RightText from "../../components/RightText";
 import { GasContext } from "../../contexts/GasContext";
 import { PrimitiveContext } from "../../contexts/PrimitiveContext";
 import { UniswapContext } from "../../contexts/UniswapContext";
+import { PriceContext } from "../../contexts/PriceContext";
+import { OrderContext } from "../../contexts/OrderContext";
 
 const Wrapper = styled(Column)`
     margin: 0 auto 1em auto;
@@ -28,40 +30,31 @@ const Summary = styled(Column)`
 interface CartProps {
     cart: string[];
     submitOrder: Function;
-    gasSpend?: string;
-    ethPrice?: string;
-    total?: string;
 }
 
-const Cart: FunctionComponent<CartProps> = ({
-    cart,
-    submitOrder,
-    gasSpend,
-    ethPrice,
-    total,
-    children,
-}) => {
+const Cart: FunctionComponent<CartProps> = ({ /* cart, */ submitOrder }) => {
+    const [priceData, setPriceData] = useContext(PriceContext);
+    const [orderData, setOrderData] = useContext(OrderContext);
     const [gasData, setGasData] = useContext(GasContext);
     const [primitiveData, setPrimitiveData] = useContext(PrimitiveContext);
-    const [uniswapData, setUniswapData] = useContext(UniswapContext);
+    const [uniswapData, setUniswapData, getPremium] = useContext(
+        UniswapContext
+    );
     const [totalGasCost, setTotalGasCost] = useState<any>();
     const [premium, setPremium] = useState<any>("");
 
-    console.log({ uniswapData });
     const calculateGasCost = async () => {
         let cost;
         if (gasData.gas) {
             cost = gasData?.gas?.fast / 10 ** 10;
-            if (gasSpend) {
-                cost = cost * +gasSpend;
-                if (ethPrice) {
-                    cost = cost * +ethPrice;
-                    console.log(cost);
-                }
-            } else {
-                cost = cost * 100000 * 250;
+            cost = cost * 100000;
+            if (priceData) {
+                cost = cost * +priceData.asset?.usd;
             }
+        } else {
+            cost = cost * 100000 * 250;
         }
+
         return cost;
     };
 
@@ -71,17 +64,19 @@ const Cart: FunctionComponent<CartProps> = ({
             setTotalGasCost(total);
         }
         calcGas();
-    }, [cart, gasData.isLoaded]);
+    }, [orderData, gasData.isLoaded]);
 
     return (
         <Wrapper id="cart">
             <Card id="cart-card">
                 <CardHeader>Your Order</CardHeader>
-                {cart.map((v, index) => (
+                {orderData?.cart.map((v, index) => (
                     <CardItem>
                         <Column id="card-item-details" style={{ width: "50%" }}>
                             <LeftText>
-                                {cart[index].substr(0, 6).concat("..")}
+                                {orderData?.cart[index]
+                                    .substr(0, 6)
+                                    .concat("...")}
                             </LeftText>
                         </Column>
                         <Column
@@ -91,8 +86,10 @@ const Cart: FunctionComponent<CartProps> = ({
                         <Column id="card-item-remove" style={{ width: "25%" }}>
                             <RightText>
                                 ${" "}
-                                {uniswapData
-                                    ? (+uniswapData.premium).toFixed(2)
+                                {orderData?.prices
+                                    ? (+orderData?.prices?.premiums[v]).toFixed(
+                                          2
+                                      )
                                     : "..."}
                             </RightText>
                         </Column>
@@ -108,7 +105,12 @@ const Cart: FunctionComponent<CartProps> = ({
                             id="card-item-total:price"
                             style={{ width: "50%" }}
                         >
-                            <RightText>$ {total ? total : "..."}</RightText>
+                            <RightText>
+                                ${" "}
+                                {orderData?.prices
+                                    ? (+orderData?.prices?.total).toFixed(2)
+                                    : "..."}
+                            </RightText>
                         </Column>
                     </Row>
 

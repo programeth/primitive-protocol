@@ -42,24 +42,20 @@ const checkUnderlyingBalance = async (signer, optionAddress) => {
 
 const newOption = (providerOrSigner, address) => {
     const option = new ethers.Contract(address, Option.abi, providerOrSigner);
-    console.log("Got option:", option.address);
     return option;
 };
 const newRedeem = (signer, address) => {
     const redeem = new ethers.Contract(address, Redeem.abi, signer);
-    console.log("Got redeem:", redeem.address);
     return redeem;
 };
 
 const newTrader = (signer) => {
     const trader = new ethers.Contract(Trader.address, Trader.abi, signer);
-    console.log("Got Trader:", trader.address);
     return trader;
 };
 
 const newERC20 = (signer, address) => {
     const erc20 = new ethers.Contract(address, ERC20.abi, signer);
-    console.log("Got Erc20: ", erc20.address);
     return erc20;
 };
 
@@ -94,43 +90,6 @@ const checkAllowance = async (
     }
     return allowance;
 };
-
-/* const safeExercise = async (
-    provider: ethers.providers.Web3Provider,
-    address: number,
-    amount: number
-): Promise<Object> => {
-    
-    const trader: any = await newTrader(provider);
-    
-    const option: any = await newOption(provider, address);
-    const tokenS: any = await newERC20(
-        provider,
-        await option.strikeToken()
-    );
-    await checkAllowance(provider, tokenS, provider.getSigner(), trader._address, amount);
-    await checkAllowance(provider, option, provider.getSigner(), trader._address, amount);
-    let inTokenS: ethers.BigNumber = ethers.BigNumber.from(parseEther(amount.toString()));
-    let inTokenP: number = Number(
-        inTokenS
-            .mul(ethers.BigNumber.from(await option.base()))
-            .div(ethers.BigNumber.from(await option.price()))
-    );
-    let exercise: Object;
-    console.log(inTokenS.toString(), inTokenP.toString());
-    try {
-        exercise = await trader
-            .safeSwap(address, inTokenS.toString(), provider.getSigner())
-            .send({
-                from: provider.getSigner(),
-            });
-    } catch (err) {
-        console.error({ err });
-        exercise = {};
-    }
-
-    return exercise;
-}; */
 
 const safeMint = async (
     provider: ethers.providers.Web3Provider,
@@ -194,7 +153,6 @@ const estimateMintGas = async (provider, address, amount) => {
         console.log({ err });
         gas = "";
     }
-    console.log({ gas });
     return gas;
 };
 

@@ -1,10 +1,16 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, {
+    FunctionComponent,
+    useEffect,
+    useState,
+    useContext,
+} from "react";
 import styled from "styled-components";
 import H3 from "../../components/H3";
 import Button from "../../components/Button";
 import { formatEther } from "ethers/utils";
 import Loading from "../../components/Loading";
 import Row from "../../components/Row";
+import { OrderContext } from "../../contexts/OrderContext";
 
 const Add = styled(Button)`
     border-radius: 720px;
@@ -46,8 +52,9 @@ const TRow = styled(Row)`
     border-bottom: solid 0.1em #212121;
 `;
 
-const TableRow: FunctionComponent<any> = ({ option, addToCart, data }) => {
+const TableRow: FunctionComponent<any> = ({ option, data }) => {
     const [tableItems, setTableItems] = useState<any>();
+    const [orderData, setOrderData, addToCart] = useContext(OrderContext);
 
     useEffect(() => {
         let table = ["", "", "", "", "", ""];
@@ -68,12 +75,10 @@ const TableRow: FunctionComponent<any> = ({ option, addToCart, data }) => {
                 "$ ...",
                 "... %",
             ];
-            console.log(data);
         }
         setTableItems(table);
     }, [data]);
 
-    console.log(data ? data : "loding data");
     return (
         <TRow id="table-row">
             {tableItems ? (

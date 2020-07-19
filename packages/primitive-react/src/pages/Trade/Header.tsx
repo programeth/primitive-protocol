@@ -10,7 +10,9 @@ import TrendingUpIcon from "@material-ui/icons/TrendingUp";
 import TrendingDownIcon from "@material-ui/icons/TrendingDown";
 
 const Header: FunctionComponent<any> = () => {
-    const [data, setData, getPriceOf, updatePrice] = useContext(PriceContext);
+    const [priceData, setPriceData, getPriceOf, updatePrice] = useContext(
+        PriceContext
+    );
 
     const upGreen = (
         <TrendingUpIcon
@@ -27,30 +29,34 @@ const Header: FunctionComponent<any> = () => {
         />
     );
 
-    const up = data ? (+data?.asset?.usd_24h_change > 0 ? true : false) : true;
+    const up = priceData
+        ? +priceData?.asset?.usd_24h_change > 0
+            ? true
+            : false
+        : true;
     const color = up ? "lightgreen" : "red";
 
-    useEffect(() => {}, [data.asset]);
+    useEffect(() => {}, [priceData.asset]);
 
     return (
         <Row id="trade-view-header">
             <Column style={{ width: "25%" }}>
                 <H2>Ether</H2>
                 <H2>
-                    {!data?.isLoaded ? (
+                    {!priceData?.isLoaded ? (
                         <Loading />
                     ) : (
-                        "$" + (+data?.asset?.usd).toFixed(2)
+                        "$" + (+priceData?.asset?.usd).toFixed(2)
                     )}
                 </H2>
                 <Row>
                     {up ? upGreen : downRed}
                     <H3 color={color}>
                         {" "}
-                        {!data?.isLoaded ? (
+                        {!priceData?.isLoaded ? (
                             <Loading />
-                        ) : data ? (
-                            (+data?.asset?.usd_24h_change).toFixed(2) + "%"
+                        ) : priceData ? (
+                            (+priceData?.asset?.usd_24h_change).toFixed(2) + "%"
                         ) : (
                             <Loading />
                         )}

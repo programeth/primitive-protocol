@@ -29,10 +29,9 @@ const UniswapProvider = (props) => {
     const [uniswapData, setUniswapData] = useState<any>();
 
     const getPremium = async (optionAddress) => {
-        const provider = web3React.library;
-        const pairAddress = await getPair(web3React.library, optionAddress);
+        const pairAddress = await getPair(provider, optionAddress);
         // need price to calc premium + breakeven, total liquidity for option, volume
-        const pair = new UniswapPair(pairAddress, await provider.getSigner());
+        const pair = new UniswapPair(pairAddress, provider);
         const token0 = await pair.token0();
         const reserves = await pair.getReserves();
         let premium = 0;
@@ -82,7 +81,7 @@ const UniswapProvider = (props) => {
 
     return (
         <UniswapContext.Provider
-            value={[uniswapData, setUniswapData, getPairData]}
+            value={[uniswapData, setUniswapData, getPairData, getPremium]}
         >
             {props.children}
         </UniswapContext.Provider>

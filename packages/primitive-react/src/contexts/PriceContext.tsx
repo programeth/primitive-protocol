@@ -33,15 +33,17 @@ const getPriceOf = (asset) => {
 const PriceContext = createContext<any[]>([]);
 
 const PriceProvider = (props) => {
-    const [data, setData] = useState<any>(getPriceOf("ethereum"));
+    const [priceData, setPriceData] = useState<any>(getPriceOf("ethereum"));
 
     const updatePrice = (asset) => {
         let updated = getPriceOf(asset);
-        setData(updated);
+        setPriceData(updated);
     };
 
     return (
-        <PriceContext.Provider value={[data, setData, getPriceOf, updatePrice]}>
+        <PriceContext.Provider
+            value={[priceData, setPriceData, getPriceOf, updatePrice]}
+        >
             {props.children}
         </PriceContext.Provider>
     );
