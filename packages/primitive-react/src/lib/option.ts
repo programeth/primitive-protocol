@@ -2,6 +2,7 @@ import Option from "@primitivefi/contracts/artifacts/Option.json";
 import Redeem from "@primitivefi/contracts/artifacts/Redeem.json";
 import ERC20 from "@primitivefi/contracts/artifacts/ERC20.json";
 import Trader from "@primitivefi/contracts/deployments/rinkeby/Trader.json";
+import Stablecoin from "@primitivefi/contracts/deployments/rinkeby/USDC.json";
 import ethers from "ethers";
 import { parseEther } from "ethers/lib/utils";
 import Address from "../components/Address";
@@ -170,6 +171,16 @@ const getRowsData = async (provider, optionAddressArray) => {
     });
 };
 
+const isCallOption = async (provider, optionAddress) => {
+    const option: any = await newOption(provider, optionAddress);
+    const underlying: any = await option.underlyingToken();
+    if (underlying == Stablecoin.address) {
+        return false;
+    } else {
+        return true;
+    }
+};
+
 export {
     safeMint,
     estimateGas,
@@ -177,6 +188,7 @@ export {
     mintTestTokens,
     checkUnderlyingBalance,
     getOptionParameters,
+    isCallOption,
 };
 
 /* const safeRedeem = async (

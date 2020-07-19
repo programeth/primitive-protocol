@@ -11,12 +11,22 @@ const OrderProvider = (props) => {
     const [orderData, setOrderData] = useState<any>({
         cart: cart,
         asset: asset,
+        orderTypes: {},
     });
 
-    const addToCart = (option) => {
+    const addToCart = (option, orderType) => {
         setCart(cart.concat(option.toString()));
         setOrderData((prevState) => {
-            return { ...prevState, cart: cart };
+            return {
+                ...prevState,
+                cart: cart,
+                orderTypes: {
+                    [option]: {
+                        isBuy: orderType.isBuy,
+                        isCall: orderType.isCall,
+                    },
+                },
+            };
         });
     };
 

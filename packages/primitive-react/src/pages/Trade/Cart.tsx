@@ -18,6 +18,7 @@ import { PrimitiveContext } from "../../contexts/PrimitiveContext";
 import { UniswapContext } from "../../contexts/UniswapContext";
 import { PriceContext } from "../../contexts/PriceContext";
 import { OrderContext } from "../../contexts/OrderContext";
+import { CardItemWrapper } from "./CardItem";
 
 const Wrapper = styled(Column)`
     margin: 0 auto 1em auto;
@@ -25,6 +26,19 @@ const Wrapper = styled(Column)`
 
 const Summary = styled(Column)`
     padding: 1em;
+`;
+
+const SubmitButton = styled(Button)`
+    margin: auto;
+    color: black;
+    background-color: #09ff7a;
+    border-color: #09ff7a;
+    width: 100%;
+    border-radius: 4px;
+    :hover {
+        background-color: #51ff9f;
+        border-color: #51ff9f;
+    }
 `;
 
 interface CartProps {
@@ -67,29 +81,7 @@ const Cart: FunctionComponent<CartProps> = ({ submitOrder }) => {
             <Card id="cart-card">
                 <CardHeader>Your Order</CardHeader>
                 {orderData?.cart.map((v, index) => (
-                    <CardItem>
-                        <Column id="card-item-details" style={{ width: "50%" }}>
-                            <LeftText>
-                                {orderData?.cart[index]
-                                    .substr(0, 6)
-                                    .concat("...")}
-                            </LeftText>
-                        </Column>
-                        <Column
-                            id="card-item-select"
-                            style={{ width: "25%" }}
-                        ></Column>
-                        <Column id="card-item-remove" style={{ width: "25%" }}>
-                            <RightText>
-                                ${" "}
-                                {orderData?.prices
-                                    ? (+orderData?.prices?.premiums[v]).toFixed(
-                                          2
-                                      )
-                                    : "..."}
-                            </RightText>
-                        </Column>
-                    </CardItem>
+                    <CardItem option={v} />
                 ))}
 
                 <Summary id="cart-summary">
@@ -141,21 +133,12 @@ const Cart: FunctionComponent<CartProps> = ({ submitOrder }) => {
                             <RightText>$1.00</RightText>
                         </Column>
                     </Row>
-
-                    <CardItem>
-                        <Button
-                            style={{
-                                margin: "auto",
-                                backgroundColor: "lightgreen",
-                                color: "black",
-                                borderColor: "lightgreen",
-                            }}
-                            onClick={() => submitOrder()}
-                        >
-                            Submit
-                        </Button>
-                    </CardItem>
                 </Summary>
+                <CardItemWrapper>
+                    <SubmitButton onClick={() => submitOrder()}>
+                        Submit
+                    </SubmitButton>
+                </CardItemWrapper>
             </Card>
         </Wrapper>
     );

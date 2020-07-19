@@ -43,7 +43,7 @@ const TRow = styled(Row)`
     border-bottom: solid 0.1em #212121;
 `;
 
-const TableRow: FunctionComponent<any> = ({ option }) => {
+const TableRow: FunctionComponent<any> = ({ option, isBuy }) => {
     const [tableItems, setTableItems] = useState<any>();
     const [orderData, setOrderData, addToCart] = useContext(OrderContext);
     const [primitiveData, setPrimitiveData] = useContext(PrimitiveContext);
@@ -78,7 +78,7 @@ const TableRow: FunctionComponent<any> = ({ option }) => {
                 <Loading />
             )}
             <Item>
-                <Item onClick={() => addToCart(option)} border>
+                <Item onClick={() => addToCart(option, { isBuy })} border>
                     <H3>
                         ${" "}
                         {primitiveData?.options[option] ? (
@@ -87,7 +87,7 @@ const TableRow: FunctionComponent<any> = ({ option }) => {
                             <Loading />
                         )}
                     </H3>
-                    <Add onClick={() => addToCart(option)}>+</Add>
+                    <Add onClick={() => addToCart(option, { isBuy })}>+</Add>
                 </Item>
             </Item>
         </TRow>

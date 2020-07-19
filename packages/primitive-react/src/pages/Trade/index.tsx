@@ -28,6 +28,7 @@ import {
     estimateGas,
     estimateMintGas,
     getOptionParameters,
+    isCallOption,
 } from "../../lib/option";
 import { OrderContext } from "../../contexts/OrderContext";
 import { PrimitiveContext } from "../../contexts/PrimitiveContext";
@@ -42,6 +43,8 @@ const TABLE_HEADERS = [
 ];
 
 const OPTIONS_ARRAY = ["0x6AFAC69a1402b810bDB5733430122264b7980b6b"];
+const PUTS_ARRAY = ["0x6AFAC69a1402b810bDB5733430122264b7980b6b"];
+const CALLS_ARRAY = [];
 
 type TradeProps = {
     web3?: any;
@@ -100,8 +103,8 @@ const CartView = styled(Column)`
 `;
 
 const Trade: FunctionComponent<TradeProps> = () => {
-    const [isBuy, setIsBuy] = useState<boolean>(true);
-    const [isCall, setIsCall] = useState<boolean>(true);
+    const [buys, setBuys] = useState<boolean>(true);
+    const [calls, setCalls] = useState<boolean>(true);
     const [expiry, setExpiry] = useState<any>();
     const [gasSpend, setGasSpend] = useState<any>();
     const [orderData, setOrderData] = useContext(OrderContext);
@@ -113,9 +116,9 @@ const Trade: FunctionComponent<TradeProps> = () => {
     const web3React = useWeb3React();
     const provider = web3React.library || ethers.getDefaultProvider("rinkeby");
 
-    const updateTable = (isBuy, isCall) => {
-        setIsCall(isCall);
-        setIsBuy(isBuy);
+    const updateTable = (buys, calls) => {
+        setCalls(calls);
+        setBuys(buys);
     };
 
     useEffect(() => {
@@ -150,15 +153,17 @@ const Trade: FunctionComponent<TradeProps> = () => {
     const updatePrimitiveContext = async () => {
         let newOptions = {};
         for (let i = 0; i < OPTIONS_ARRAY.length; i++) {
-            let option = OPTIONS_ARRAY[i];
+            let option = calls ? CALLS_ARRAY[i] : PUTS_ARRAY[i];
             let premium = await getPremium(provider, option);
             let openInterest = await getOpenInterest(provider, option);
             let params = await getOptionParameters(provider, option);
+            let isCall = await isCallOption(provider, option);
             Object.assign(newOptions, {
                 [option]: {
                     premium: premium,
                     openInterest: openInterest,
                     params: params,
+                    isCall: isCall,
                 },
             });
         }
@@ -202,7 +207,7 @@ const Trade: FunctionComponent<TradeProps> = () => {
         };
         run();
         console.log(orderData, primitiveData);
-    }, [orderData?.cart]);
+    }, [orderData?.cart, calls]);
 
     return (
         <Page web3React={web3React} injected={injected}>
@@ -233,7 +238,9 @@ const Trade: FunctionComponent<TradeProps> = () => {
 
                     <Table id="table">
                         {primitiveData ? (
-                            OPTIONS_ARRAY.map((v) => <TableRow option={v} />)
+                            OPTIONS_ARRAY.map((v) => (
+                                <TableRow option={v} isBuy={buys} />
+                            ))
                         ) : (
                             <Loading />
                         )}
