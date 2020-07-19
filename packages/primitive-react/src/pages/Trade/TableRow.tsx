@@ -43,31 +43,13 @@ const TRow = styled(Row)`
     border-bottom: solid 0.1em #212121;
 `;
 
-const TableRow: FunctionComponent<any> = ({ option, data }) => {
+const TableRow: FunctionComponent<any> = ({ option }) => {
     const [tableItems, setTableItems] = useState<any>();
     const [orderData, setOrderData, addToCart] = useContext(OrderContext);
     const [primitiveData, setPrimitiveData] = useContext(PrimitiveContext);
 
     useEffect(() => {
         let table = ["...", "...", "...", "...", "...", "..."];
-        /* if (data) {
-            let strike = data
-                ? data.params
-                    ? formatEther(data?.params?._quote)
-                    : "..."
-                : "...";
-            let breakeven = data ? +data?.pair?.premium + +strike : "..";
-            let openInterest = data
-                ? formatEther(data?.pair?.openInterest)
-                : "..";
-            table = [
-                `$ ${(+strike).toFixed(2)}`,
-                `$ ${(+breakeven).toFixed(2)}`,
-                `${(+openInterest).toFixed(2)}`,
-                "$ ...",
-                "... %",
-            ];
-        } */
         let data = primitiveData?.options[option];
         if (data) {
             let strike = data.params ? formatEther(data.params?._quote) : "...";
@@ -82,7 +64,7 @@ const TableRow: FunctionComponent<any> = ({ option, data }) => {
             ];
         }
         setTableItems(table);
-    }, [data, primitiveData]);
+    }, [primitiveData]);
 
     return (
         <TRow id="table-row">
@@ -99,7 +81,11 @@ const TableRow: FunctionComponent<any> = ({ option, data }) => {
                 <Item onClick={() => addToCart(option)} border>
                     <H3>
                         ${" "}
-                        {data ? (data?.pair?.premium).toFixed(2) : <Loading />}
+                        {primitiveData?.options[option] ? (
+                            (primitiveData?.options[option]?.premium).toFixed(2)
+                        ) : (
+                            <Loading />
+                        )}
                     </H3>
                     <Add onClick={() => addToCart(option)}>+</Add>
                 </Item>
