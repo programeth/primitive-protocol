@@ -30,16 +30,6 @@ const Add = styled(Button)`
     }
 `;
 
-const Cost = styled(Button)`
-    border-radius: 8px 0px 0px 8px;
-    min-width: 2em;
-    min-height: 1em;
-    align-items: center;
-    font-weight: 500;
-    margin: 0;
-    padding: 8px;
-`;
-
 const Item = styled.div`
     width: 100%;
     height: 10vmin;

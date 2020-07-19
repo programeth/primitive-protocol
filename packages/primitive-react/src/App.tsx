@@ -6,6 +6,9 @@ import ethers from "ethers";
 import styled from "styled-components";
 import GlobalStyle from "./global-styles";
 
+// == Context ==
+import { MetaProvider } from "./contexts/MetaContext";
+
 // == Pages ==
 import Trade from "./pages/Trade";
 import { Home } from "./pages/Home";
@@ -34,23 +37,25 @@ function App() {
     return (
         <Container className="App">
             <Web3ReactProvider getLibrary={getLibrary}>
-                <Router>
-                    <Switch>
-                        <Route exact path="/" component={Home} />
-                    </Switch>
+                <MetaProvider>
+                    <Router>
+                        <Switch>
+                            <Route exact path="/" component={Home} />
+                        </Switch>
 
-                    <Switch>
-                        <Route path="/trade" component={Trade} />
-                    </Switch>
+                        <Switch>
+                            <Route path="/trade" component={Trade} />
+                        </Switch>
 
-                    <Switch>
-                        <Route path="/test" component={Typeform} />
-                    </Switch>
+                        <Switch>
+                            <Route path="/test" component={Typeform} />
+                        </Switch>
 
-                    <Switch>
-                        <Route path="/otc" component={Otc} />
-                    </Switch>
-                </Router>
+                        <Switch>
+                            <Route path="/otc" component={Otc} />
+                        </Switch>
+                    </Router>
+                </MetaProvider>
             </Web3ReactProvider>
             <GlobalStyle />
         </Container>

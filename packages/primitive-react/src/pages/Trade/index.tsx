@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, {
+    FunctionComponent,
+    useEffect,
+    useState,
+    useContext,
+} from "react";
 import Page from "../../components/Page";
 import H3 from "../../components/H3";
 import TableRow from "./TableRow";
@@ -6,7 +11,6 @@ import styled from "styled-components";
 import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import Section from "../../components/Section";
-import Dropdown from "./Dropdown";
 import Cart from "./Cart";
 import Loading from "../../components/Loading";
 import {
@@ -20,7 +24,6 @@ import Header from "./Header";
 import Row from "../../components/Row";
 import Column from "../../components/Column";
 import TableButtons from "./TableButtons";
-import { PriceProvider } from "../../contexts/PriceContext";
 import {
     Trader,
     Option,
@@ -35,10 +38,7 @@ import Ether from "@primitivefi/contracts/deployments/rinkeby/ETH.json";
 import { parseEther } from "ethers/utils";
 import { getPair } from "../../lib/pool";
 import Positions from "./Positions";
-import { GasProvider } from "../../contexts/GasContext";
-import { UniswapProvider } from "../../contexts/UniswapContext";
-import { PrimitiveProvider } from "../../contexts/PrimitiveContext";
-import { OrderProvider } from "../../contexts/OrderContext";
+import { OrderContext } from "../../contexts/OrderContext";
 
 type TradeProps = {
     web3?: any;
@@ -108,16 +108,13 @@ const Trade: FunctionComponent<TradeProps> = () => {
     const [parameters, setParameters] = useState<any>();
     const [tableData, setTableData] = useState<any>();
     const [totalDebit, setTotalDebit] = useState<any>();
+    const [orderData, setOrderData] = useContext(OrderContext);
 
     const injected = new InjectedConnector({
         supportedChainIds: [1, 3, 4, 5, 42],
     });
     const web3React = useWeb3React();
     const provider = web3React.library || ethers.getDefaultProvider("rinkeby");
-
-    const addToCart = (option) => {
-        setCart(cart.concat(option.toString()));
-    };
 
     const getTotalDebit = async () => {
         let premiums: any[] = [];
@@ -206,7 +203,7 @@ const Trade: FunctionComponent<TradeProps> = () => {
     const getPremium = async (optionAddress) => {
         const pairAddress = await getPair(provider, optionAddress);
         // need price to calc premium + breakeven, total liquidity for option, volume
-        const pair = new UniswapPair(pairAddress, await provider.getSigner());
+        const pair = new UniswapPair(pairAddress, provider);
         const token0 = await pair.token0();
         const reserves = await pair.getReserves();
         let premium = 0;
@@ -322,75 +319,90 @@ const Trade: FunctionComponent<TradeProps> = () => {
         }
     };
 
+    const updateOrderContext = async () => {
+        let cart = orderData?.cart;
+        let prices = {};
+        let premiums = {};
+        let debit;
+        for (let i = 0; i < cart.length; i++) {
+            let premium;
+            try {
+                premium = await getPremium(cart[i]);
+            } catch (err) {
+                if (cart[i] != ethers.constants.AddressZero) {
+                    console.log(err);
+                }
+                premium = 0;
+            }
+            premiums[cart[i]] = premium;
+            debit = debit + premium;
+        }
+        Object.assign(prices, {
+            premiums: premiums,
+            total: debit,
+        });
+        setOrderData((prevState) => {
+            return { ...prevState, prices: prices };
+        });
+    };
+
+    useEffect(() => {
+        const run = async () => {
+            updateOrderContext();
+        };
+        run();
+        console.log(orderData);
+    }, [orderData?.cart]);
+
     return (
         <Page web3React={web3React} injected={injected}>
             <TradeView id="trade-view">
-                <PriceProvider>
-                    <GasProvider>
-                        <PrimitiveProvider>
-                            <UniswapProvider>
-                                <OrderProvider>
-                                    <TableView id="table-view">
-                                        <Header />
+                <TableView id="table-view">
+                    <Header />
 
-                                        <Row
-                                            id="table-view-select-container"
-                                            style={{ width: "100%" }}
-                                        >
-                                            <Section
-                                                style={{
-                                                    margin: "2em auto 2em 0",
-                                                }}
-                                            >
-                                                <TableButtons
-                                                    update={updateTable}
-                                                />
-                                            </Section>
-                                        </Row>
+                    <Row
+                        id="table-view-select-container"
+                        style={{ width: "100%" }}
+                    >
+                        <Section
+                            style={{
+                                margin: "2em auto 2em 0",
+                            }}
+                        >
+                            <TableButtons update={updateTable} />
+                        </Section>
+                    </Row>
 
-                                        <TableHeader id="table-header">
-                                            {tableHeaders.map((v) => (
-                                                <TableHeaderText
-                                                    style={{ width: "20%" }}
-                                                >
-                                                    {v}
-                                                </TableHeaderText>
-                                            ))}
-                                        </TableHeader>
+                    <TableHeader id="table-header">
+                        {tableHeaders.map((v) => (
+                            <TableHeaderText style={{ width: "20%" }}>
+                                {v}
+                            </TableHeaderText>
+                        ))}
+                    </TableHeader>
 
-                                        <Table id="table">
-                                            {tableData ? (
-                                                options.map((v, i) => (
-                                                    <TableRow
-                                                        option={v}
-                                                        data={tableData[i]}
-                                                    />
-                                                ))
-                                            ) : (
-                                                <Loading />
-                                            )}
-                                        </Table>
-                                    </TableView>
+                    <Table id="table">
+                        {tableData ? (
+                            options.map((v, i) => (
+                                <TableRow option={v} data={tableData[i]} />
+                            ))
+                        ) : (
+                            <Loading />
+                        )}
+                    </Table>
+                </TableView>
 
-                                    <CartView id="cart-position-view">
-                                        <Cart
-                                            cart={cart}
-                                            submitOrder={submitOrder}
-                                        />
+                <CartView id="cart-position-view">
+                    <Cart cart={cart} submitOrder={submitOrder} />
 
-                                        {/* <Positions
+                    {/* <Positions
                                         cart={cart}
                                         submitOrder={submitOrder}
                                         gasSpend={gasSpend}
                                         ethPrice={"100"}
                                         total={totalDebit}
                                     /> */}
-                                    </CartView>
-                                </OrderProvider>
-                            </UniswapProvider>
-                        </PrimitiveProvider>
-                    </GasProvider>
-                </PriceProvider>
+                </CartView>
             </TradeView>
         </Page>
     );

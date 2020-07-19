@@ -10,9 +10,7 @@ import TrendingUpIcon from "@material-ui/icons/TrendingUp";
 import TrendingDownIcon from "@material-ui/icons/TrendingDown";
 
 const Header: FunctionComponent<any> = () => {
-    const [priceData, setPriceData, getPriceOf, updatePrice] = useContext(
-        PriceContext
-    );
+    const [priceData] = useContext(PriceContext);
 
     const upGreen = (
         <TrendingUpIcon

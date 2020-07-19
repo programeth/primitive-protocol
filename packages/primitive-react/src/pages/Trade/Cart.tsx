@@ -37,9 +37,6 @@ const Cart: FunctionComponent<CartProps> = ({ /* cart, */ submitOrder }) => {
     const [orderData, setOrderData] = useContext(OrderContext);
     const [gasData, setGasData] = useContext(GasContext);
     const [primitiveData, setPrimitiveData] = useContext(PrimitiveContext);
-    const [uniswapData, setUniswapData, getPremium] = useContext(
-        UniswapContext
-    );
     const [totalGasCost, setTotalGasCost] = useState<any>();
     const [premium, setPremium] = useState<any>("");
 
