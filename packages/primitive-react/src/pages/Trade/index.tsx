@@ -39,6 +39,18 @@ import { parseEther } from "ethers/utils";
 import { getPair } from "../../lib/pool";
 import Positions from "./Positions";
 import { OrderContext } from "../../contexts/OrderContext";
+import { PrimitiveContext } from "../../contexts/PrimitiveContext";
+
+const TABLE_HEADERS = [
+    "Strike",
+    "Breakeven",
+    "Open Interest",
+    "Volume 24hr",
+    "% Change 24hr",
+    "Price",
+];
+
+const OPTIONS_ARRAY = ["0x6AFAC69a1402b810bDB5733430122264b7980b6b"];
 
 type TradeProps = {
     web3?: any;
@@ -96,11 +108,7 @@ const CartView = styled(Column)`
     flex-direction: column;
 `;
 
-const ethPriceApi =
-    "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd&include_24hr_change=true";
-
 const Trade: FunctionComponent<TradeProps> = () => {
-    const [cart, setCart] = useState<string[]>([ethers.constants.AddressZero]);
     const [isBuy, setIsBuy] = useState<boolean>(true);
     const [isCall, setIsCall] = useState<boolean>(true);
     const [expiry, setExpiry] = useState<any>();
@@ -109,6 +117,7 @@ const Trade: FunctionComponent<TradeProps> = () => {
     const [tableData, setTableData] = useState<any>();
     const [totalDebit, setTotalDebit] = useState<any>();
     const [orderData, setOrderData] = useContext(OrderContext);
+    const [primitiveData, setPrimitiveData] = useContext(PrimitiveContext);
 
     const injected = new InjectedConnector({
         supportedChainIds: [1, 3, 4, 5, 42],
@@ -116,37 +125,12 @@ const Trade: FunctionComponent<TradeProps> = () => {
     const web3React = useWeb3React();
     const provider = web3React.library || ethers.getDefaultProvider("rinkeby");
 
-    const getTotalDebit = async () => {
-        let premiums: any[] = [];
-        let debit;
-        for (let i = 0; i < cart.length; i++) {
-            let premium = await getPremium(cart[i]);
-            premiums[i] = premium;
-            debit = debit + premium;
-        }
-
-        return { premiums, debit };
-    };
-
-    useEffect(() => {
-        async function calcPremium() {
-            if (web3React.library) {
-                const total = await getTotalDebit();
-                setTotalDebit(total);
-            }
-        }
-        calcPremium();
-    }, [cart]);
-
     const updateTable = (isBuy, isCall) => {
         setIsCall(isCall);
         setIsBuy(isBuy);
     };
 
     const submitOrder = async () => {
-        console.log("Submitting order for: ");
-        cart.map((v) => console.log({ v }));
-        const provider: ethers.providers.Web3Provider = web3React.library;
         try {
             let gas = await estimateMintGas(
                 provider,
@@ -168,20 +152,10 @@ const Trade: FunctionComponent<TradeProps> = () => {
         }
     };
 
-    const tableHeaders = [
-        "Strike",
-        "Breakeven",
-        "Open Interest",
-        "Volume 24hr",
-        "% Change 24hr",
-        "Price",
-    ];
-
-    const options = ["0x6AFAC69a1402b810bDB5733430122264b7980b6b"];
     const getTable = async () => {
         let data = {};
-        for (let i = 0; i < options.length; i++) {
-            let table = await getTableData(options[i]);
+        for (let i = 0; i < OPTIONS_ARRAY.length; i++) {
+            let table = await getTableData(OPTIONS_ARRAY[i]);
             data[i] = table;
         }
         return data;
@@ -196,6 +170,7 @@ const Trade: FunctionComponent<TradeProps> = () => {
             setParameters(params);
             let data = await getTable();
             setTableData(data);
+            await updateOptionDetails();
         }
         updateParams();
     }, [web3React.library]);
@@ -241,6 +216,21 @@ const Trade: FunctionComponent<TradeProps> = () => {
             premium = reserves._reserve0 / reserves._reserve1;
         }
         return { premium, openInterest };
+    };
+
+    const getOpenInterest = async (optionAddress) => {
+        const pairAddress = await getPair(provider, optionAddress);
+        const pair = new UniswapPair(pairAddress, provider);
+        const token0 = await pair.token0();
+        const reserves = await pair.getReserves();
+        let openInterest = 0;
+        if (token0 == optionAddress) {
+            openInterest = reserves._reserve0;
+        } else {
+            openInterest = reserves._reserve1;
+        }
+
+        return openInterest;
     };
 
     const getOptionParams = async (optionAddress) => {
@@ -319,6 +309,27 @@ const Trade: FunctionComponent<TradeProps> = () => {
         }
     };
 
+    const updateOptionDetails = async () => {
+        let newOptions = {};
+        for (let i = 0; i < OPTIONS_ARRAY.length; i++) {
+            let option = OPTIONS_ARRAY[i];
+            let premium = await getPremium(option);
+            let openInterest = await getOpenInterest(option);
+            let params = await getOptionParams(option);
+            Object.assign(newOptions, {
+                [option]: {
+                    premium: premium,
+                    openInterest: openInterest,
+                    params: params,
+                },
+            });
+        }
+
+        setPrimitiveData((prevState) => {
+            return { ...prevState, options: newOptions };
+        });
+    };
+
     const updateOrderContext = async () => {
         let cart = orderData?.cart;
         let prices = {};
@@ -348,10 +359,11 @@ const Trade: FunctionComponent<TradeProps> = () => {
 
     useEffect(() => {
         const run = async () => {
-            updateOrderContext();
+            await updateOrderContext();
+            await updateOptionDetails();
         };
         run();
-        console.log(orderData);
+        console.log(orderData, primitiveData);
     }, [orderData?.cart]);
 
     return (
@@ -374,7 +386,7 @@ const Trade: FunctionComponent<TradeProps> = () => {
                     </Row>
 
                     <TableHeader id="table-header">
-                        {tableHeaders.map((v) => (
+                        {TABLE_HEADERS.map((v) => (
                             <TableHeaderText style={{ width: "20%" }}>
                                 {v}
                             </TableHeaderText>
@@ -383,7 +395,7 @@ const Trade: FunctionComponent<TradeProps> = () => {
 
                     <Table id="table">
                         {tableData ? (
-                            options.map((v, i) => (
+                            OPTIONS_ARRAY.map((v, i) => (
                                 <TableRow option={v} data={tableData[i]} />
                             ))
                         ) : (
@@ -393,7 +405,7 @@ const Trade: FunctionComponent<TradeProps> = () => {
                 </TableView>
 
                 <CartView id="cart-position-view">
-                    <Cart cart={cart} submitOrder={submitOrder} />
+                    <Cart submitOrder={submitOrder} />
 
                     {/* <Positions
                                         cart={cart}

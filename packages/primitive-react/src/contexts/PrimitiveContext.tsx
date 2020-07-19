@@ -12,14 +12,7 @@ const PrimitiveProvider = (props) => {
         ? web3React.library
         : ethers.getDefaultProvider("rinkeby");
     const [parameters, setParameters] = useState<any>({});
-    const [primitiveData, setPrimitiveData] = useState<any>({
-        [OPTIONS_ARRAY[0]]: getOptionParameters(
-            provider,
-            OPTIONS_ARRAY[0]
-        ).then((r) => {
-            return r;
-        }),
-    });
+    const [primitiveData, setPrimitiveData] = useState<any>({ options: {} });
 
     useEffect(() => {
         for (let i = 0; i < OPTIONS_ARRAY.length; i++) {

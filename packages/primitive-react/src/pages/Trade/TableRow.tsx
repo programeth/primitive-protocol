@@ -11,6 +11,7 @@ import { formatEther } from "ethers/utils";
 import Loading from "../../components/Loading";
 import Row from "../../components/Row";
 import { OrderContext } from "../../contexts/OrderContext";
+import { PrimitiveContext } from "../../contexts/PrimitiveContext";
 
 const Add = styled(Button)`
     border-radius: 720px;
@@ -45,10 +46,11 @@ const TRow = styled(Row)`
 const TableRow: FunctionComponent<any> = ({ option, data }) => {
     const [tableItems, setTableItems] = useState<any>();
     const [orderData, setOrderData, addToCart] = useContext(OrderContext);
+    const [primitiveData, setPrimitiveData] = useContext(PrimitiveContext);
 
     useEffect(() => {
-        let table = ["", "", "", "", "", ""];
-        if (data) {
+        let table = ["...", "...", "...", "...", "...", "..."];
+        /* if (data) {
             let strike = data
                 ? data.params
                     ? formatEther(data?.params?._quote)
@@ -65,9 +67,22 @@ const TableRow: FunctionComponent<any> = ({ option, data }) => {
                 "$ ...",
                 "... %",
             ];
+        } */
+        let data = primitiveData?.options[option];
+        if (data) {
+            let strike = data.params ? formatEther(data.params?._quote) : "...";
+            let breakeven = +data.premium + +strike;
+            let openInterest = formatEther(data.openInterest);
+            table = [
+                `$ ${(+strike).toFixed(2)}`,
+                `$ ${(+breakeven).toFixed(2)}`,
+                `${(+openInterest).toFixed(2)}`,
+                "$ ...",
+                "... %",
+            ];
         }
         setTableItems(table);
-    }, [data]);
+    }, [data, primitiveData]);
 
     return (
         <TRow id="table-row">

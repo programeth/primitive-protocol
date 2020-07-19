@@ -28,11 +28,10 @@ const Summary = styled(Column)`
 `;
 
 interface CartProps {
-    cart: string[];
     submitOrder: Function;
 }
 
-const Cart: FunctionComponent<CartProps> = ({ /* cart, */ submitOrder }) => {
+const Cart: FunctionComponent<CartProps> = ({ submitOrder }) => {
     const [priceData, setPriceData] = useContext(PriceContext);
     const [orderData, setOrderData] = useContext(OrderContext);
     const [gasData, setGasData] = useContext(GasContext);
