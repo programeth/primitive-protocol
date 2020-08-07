@@ -59,7 +59,12 @@ contract UniswapConnector is Ownable {
     event UpdatedQuoteToken(address indexed from, address indexed newQuoteToken);
     event UniswapTraderSell(address indexed from, address indexed to, address indexed option, uint sellQuantity);
     event RolledOptions(address indexed from, address indexed optionFrom, address indexed optionTo, uint quantity);
-    event RolledOptionLiquidity(address indexed from, address indexed optionMarketFrom, address indexed optionMarketTo, uint quantity)
+    event RolledOptionLiquidity(
+        address indexed from,
+        address indexed optionMarketFrom,
+        address indexed optionMarketTo,
+        uint quantity
+    );
 
     // solhint-disable-next-line no-empty-blocks
     constructor() public {}
@@ -85,8 +90,8 @@ contract UniswapConnector is Ownable {
      * @dev Sets the state for the Primitive protocol's contracts.
      */
     function setPrimitiveProtocol(
-        address registry,
         address trader,
+        address registry,
         bool isActivelyTrading
     ) external onlyOwner {
         PrimitiveProtocol storage primitive_ = _primitive;
@@ -148,27 +153,42 @@ contract UniswapConnector is Ownable {
      * @dev Rolls liquidity in an option series to an option series with a further expiry date.
      * @notice Pulls UNI-V2 liquidity shares from msg.sender.
      */
-    function rollOptionLiquidityForExpiry(address rollFromOption, address rollToOption, address receiver, uint liquidityQuantityFrom) external  returns (bool) {
-        address uniswapMarketFrom = getUniswapMarketForOption(rollFromOption);
-        address uniswapMarketTo = getUniswapMarketForOption(rollToOption);
+    function rollOptionLiquidityForExpiry(
+        address rollFromOption,
+        address rollToOption,
+        address receiver,
+        uint liquidityQuantityFrom
+    ) external returns (bool) {
         IUniswapV2Router02 router = _uniswap.router;
         // take liquidity tokens from user
-        IERC20(uniswapMarketFrom).safeTransferFrom(msg.sender, address(this), liquidityQuantityFrom);
+        IERC20(getUniswapMarketForOption(rollFromOption)).safeTransferFrom(msg.sender, address(this), liquidityQuantityFrom);
         // redeem liquidity tokens from uniswap market to receive option + quote tokens
-        (uint amountOptions, uint amountQuoteTokens) = router.removeLiquidity(rollFromOption, quoteToken, liquidityQuantityFrom, 0, 0, address(this), getMaxDeadline());
+        (uint amountOptions, ) = router.removeLiquidity(
+            rollFromOption,
+            quoteToken,
+            liquidityQuantityFrom,
+            0,
+            0,
+            address(this),
+            getMaxDeadline()
+        );
         // calculate amount of redeem tokens needed to close the rollFromOptions
-        uint quantityRedeemsRequired = amountOptions.mul(IOption(rollFromOption).quote().div(IOption(rollFromOption).base()));
+        uint quantityRedeemsRequired = amountOptions.mul(
+            IOption(rollFromOption).quote().div(IOption(rollFromOption).base())
+        );
         // pull the necessary redeem tokens from the user
         IERC20(IOption(rollFromOption).redeemToken()).safeTransferFrom(msg.sender, address(this), quantityRedeemsRequired);
         // close the options with shorter expiry using options + redeem tokens, receive underlying tokens
         (, , uint outUnderlyings) = _primitive.trader.safeClose(IOption(rollFromOption), amountOptions, address(this));
         // mint options with further expiry using the underlying tokens received from closing the options
-        (uint outputOptions, uint outputRedeems) = _primitive.trader.safeMint(IOption(rollToOption), outUnderlyings, address(this));
-        // provide options + quote tokens to the further expiry uniswap market
-        (, , uint liquidity) = router.addLiquidity(rollToOption, quoteToken, liquidity, outputOptions, 0, receiver, getMaxDeadline());
+        {
+            (, uint outputRedeems) = _primitive.trader.safeMint(IOption(rollToOption), outUnderlyings, address(this));
+            // provide options + quote tokens to the further expiry uniswap market
+            router.addLiquidity(rollToOption, quoteToken, amountOptions, 0, 0, 0, receiver, getMaxDeadline());
+            IERC20(IOption(rollToOption).redeemToken()).safeTransfer(msg.sender, outputRedeems);
+        }
         // send redeems to msg.sender
-        IERC20(IOption(rollToOption).redeemToken()).safeTransfer(msg.sender, outputRedeems);
-        emit RolledOptionLiquidity(msg.sender, rollFromOption, rollToOption, outputOptions);
+        emit RolledOptionLiquidity(msg.sender, rollFromOption, rollToOption, amountOptions);
         return true;
     }
 
@@ -176,13 +196,21 @@ contract UniswapConnector is Ownable {
      * @dev Closes a shorter dated option and mints a longer dated option.
      * @notice Pulls option and redeem tokens from msg.sender
      */
-    function rollOptionForExpiry(address rollFromOption, address rollToOption, address receiver, uint rollQuantity) external returns (bool) {
+    function rollOptionForExpiry(
+        address rollFromOption,
+        address rollToOption,
+        address receiver,
+        uint rollQuantity
+    ) external returns (bool) {
         // close the options with shorter expiry using redeemed options + redeem tokens.
         // sends the underlying tokens to this contract
-        (, , uint outUnderlyings) = TraderLib.safeClose(IOption(rollFromOption), amountOptions, address(this));
+        (, , uint outUnderlyings) = TraderLib.safeClose(IOption(rollFromOption), rollQuantity, address(this));
         // mint options with further expiry using the underlying tokens received from closing the options
         // sends minted option and redeem tokens to the "receiver" address
-        (uint outputOptions, ) = _primitive.trader.safeMint(IOption(rollToOption), outUnderlyings, receiver);
+        ITrader trader = _primitive.trader;
+        // approve underlying to be sent to the trader
+        IERC20(IOption(rollFromOption).underlyingToken()).approve(address(trader), uint(-1));
+        (uint outputOptions, ) = trader.safeMint(IOption(rollToOption), outUnderlyings, receiver);
         emit RolledOptions(msg.sender, rollFromOption, rollToOption, outputOptions);
         return true;
     }
@@ -276,7 +304,7 @@ contract UniswapConnector is Ownable {
     /**
      * @dev Creats a Uniswap pair for option<>quote tokens.
      */
-    function deployUniswapMarket(address optionAddress) external return (address) {
+    function deployUniswapMarket(address optionAddress) external returns (address) {
         address uniswapPair = _uniswap.factory.createPair(optionAddress, quoteToken);
         emit DeployedUniswapMarket(msg.sender, optionAddress);
         return uniswapPair;

@@ -14,6 +14,7 @@ const CTokenLike = require("@primitivefi/contracts/artifacts/CTokenLike");
 const OptionTemplateLib = require("@primitivefi/contracts/artifacts/OptionTemplateLib");
 const RedeemTemplateLib = require("@primitivefi/contracts/artifacts/RedeemTemplateLib");
 const UniswapTrader = require("@primitivefi/contracts/artifacts/UniswapTrader");
+const UniswapConnector = require("@primitivefi/contracts/artifacts/UniswapConnector");
 const constants = require("./constants");
 const { MILLION_ETHER } = constants.VALUES;
 const { OPTION_TEMPLATE_LIB, REDEEM_TEMPLATE_LIB } = constants.LIBRARIES;
@@ -182,10 +183,18 @@ const newUniswapTrader = async (signer, quoteToken, router) => {
     return uniTrader;
 };
 
+const newUniswapConnector = async (signer) => {
+    const uniConnector = await deployContract(signer, UniswapConnector, [], {
+        gasLimit: 6000000,
+    });
+    return uniConnector;
+};
+
 Object.assign(module.exports, {
     newUniswap,
     newUniswapRinkeby,
     newUniswapTrader,
+    newUniswapConnector,
     newWallets,
     newERC20,
     newBadERC20,
