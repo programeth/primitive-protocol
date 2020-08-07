@@ -54,12 +54,15 @@ contract UniswapConnector is Ownable {
         bool isActivelyTraded
     );
 
+    event DeployedUniswapMarket(address indexed from, address indexed market);
     event AddedLiquidity(address indexed from, address indexed option, uint quantityUniTokens);
     event UpdatedQuoteToken(address indexed from, address indexed newQuoteToken);
     event UniswapTraderSell(address indexed from, address indexed to, address indexed option, uint sellQuantity);
 
     // solhint-disable-next-line no-empty-blocks
     constructor() public {}
+
+    // ==== Setup Functions ====
 
     /**
      * @dev Sets the state for the Uniswap protocol's contracts.
@@ -99,6 +102,8 @@ contract UniswapConnector is Ownable {
         emit UpdatedQuoteToken(msg.sender, _quoteToken);
     }
 
+    // ==== Trading Functions ====
+
     /**
      * @dev Mints options using underlyingTokens provided by user, then sells on uniswap.
      */
@@ -136,6 +141,8 @@ contract UniswapConnector is Ownable {
         emit UniswapTraderSell(msg.sender, to, option, sellQuantity);
         success = true;
     }
+
+    // ==== Liquidity Functions ====
 
     /**
      * @dev Adds liquidity to an option<>quote token pair. Takes a deposit in quote tokens.
@@ -217,6 +224,17 @@ contract UniswapConnector is Ownable {
         );
         emit AddedLiquidity(msg.sender, optionAddress, liquidity);
         return true;
+    }
+
+    // ==== Management Functions ====
+
+    /**
+     * @dev Creats a Uniswap pair for option<>quote tokens.
+     */
+    function deployUniswapMarket(address optionAddress) external return (address) {
+        address uniswapPair = _uniswap.factory.createPair(optionAddress, quoteToken);
+        emit DeployedUniswapMarket(msg.sender, optionAddress);
+        return uniswapPair;
     }
 
     // ==== View ====
