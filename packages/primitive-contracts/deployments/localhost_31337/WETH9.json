@@ -288,7 +288,7 @@
     "transactionIndex": 0,
     "gasUsed": "822050",
     "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    "blockHash": "0xbe6017be6d4efefb1cfe8d9214b1a2fbc498830286bbc452a874cf52baa891d6",
+    "blockHash": "0x344570e430814f305147bfe00f58d138f4f249d24e5c003d167b194cf180f7e5",
     "transactionHash": "0xff48f4a617ce819f122891176ad93eff3da8b35e35359ba6af2f768dd2edb499",
     "logs": [],
     "blockNumber": 8,
@@ -310,7 +310,7 @@
   "storageLayout": {
     "storage": [
       {
-        "astId": 7870,
+        "astId": 7893,
         "contract": "contracts/test/tokens/WETH9.sol:WETH9",
         "label": "name",
         "offset": 0,
@@ -318,7 +318,7 @@
         "type": "t_string_storage"
       },
       {
-        "astId": 7873,
+        "astId": 7896,
         "contract": "contracts/test/tokens/WETH9.sol:WETH9",
         "label": "symbol",
         "offset": 0,
@@ -326,7 +326,7 @@
         "type": "t_string_storage"
       },
       {
-        "astId": 7876,
+        "astId": 7899,
         "contract": "contracts/test/tokens/WETH9.sol:WETH9",
         "label": "decimals",
         "offset": 0,
@@ -334,7 +334,7 @@
         "type": "t_uint8"
       },
       {
-        "astId": 7908,
+        "astId": 7931,
         "contract": "contracts/test/tokens/WETH9.sol:WETH9",
         "label": "balanceOf",
         "offset": 0,
@@ -342,7 +342,7 @@
         "type": "t_mapping(t_address,t_uint256)"
       },
       {
-        "astId": 7914,
+        "astId": 7937,
         "contract": "contracts/test/tokens/WETH9.sol:WETH9",
         "label": "allowance",
         "offset": 0,

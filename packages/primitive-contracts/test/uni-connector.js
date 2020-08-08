@@ -131,7 +131,7 @@ describe("UniswapConnector", () => {
         });
     });
 
-    describe("rollOptionsForExpiry()", () => {
+    describe("rollOption()", () => {
         it("should roll option 1 (shorter expiry) to option 2 (longer expiry)", async () => {
             let shortOption = optionToken.address;
             let longerExpiry = "1690868900";
@@ -154,13 +154,21 @@ describe("UniswapConnector", () => {
 
             let balanceOfShortOption1 = await optionToken.balanceOf(Alice);
             let balanceOfLongOption1 = await longOptionToken.balanceOf(Alice);
-            await expect(uniswapConnector.rollOptionForExpiry(shortOption, longOption, Alice, ONE_ETHER))
+            await expect(uniswapConnector.rollOption(shortOption, longOption, Alice, ONE_ETHER))
                 .to.emit(uniswapConnector, "RolledOptions")
                 .withArgs(Alice, shortOption, longOption, ONE_ETHER);
             let balanceOfShortOption2 = await optionToken.balanceOf(Alice);
             let balanceOfLongOption2 = await longOptionToken.balanceOf(Alice);
             console.log(formatEther(balanceOfShortOption1), formatEther(balanceOfLongOption1));
             console.log(formatEther(balanceOfShortOption2), formatEther(balanceOfLongOption2));
+        });
+    });
+
+    describe("addLiquidityWithOptions", () => {
+        it("should add liquidity with options and quote tokens to a uniswap market", async () => {
+            await expect(uniswapConnector.addLiquidityWithOptions(optionToken.address, ONE_ETHER))
+                .to.emit(uniswapConnector, "AddedLiquidity")
+                .withArgs(Alice, optionToken.address, ONE_ETHER);
         });
     });
 });

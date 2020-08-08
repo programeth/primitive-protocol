@@ -153,7 +153,7 @@ contract UniswapConnector is Ownable {
      * @dev Rolls liquidity in an option series to an option series with a further expiry date.
      * @notice Pulls UNI-V2 liquidity shares from msg.sender.
      */
-    function rollOptionLiquidityForExpiry(
+    function rollOptionLiquidity(
         address rollFromOption,
         address rollToOption,
         address receiver,
@@ -196,7 +196,7 @@ contract UniswapConnector is Ownable {
      * @dev Closes a shorter dated option and mints a longer dated option.
      * @notice Pulls option and redeem tokens from msg.sender
      */
-    function rollOptionForExpiry(
+    function rollOption(
         address rollFromOption,
         address rollToOption,
         address receiver,
